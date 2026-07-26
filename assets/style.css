@@ -143,6 +143,10 @@ img {
 }
 
 /* Contenido de inicio ------------------------------------------------------ */
+.profile-header {
+  text-align: center;
+}
+
 .profile-photo {
   border-radius: 50%;
   width: 10rem;
@@ -254,8 +258,13 @@ embed[type="application/pdf"] {
 }
 
 /* Footer social icons ------------------------------------------------------ */
+.site-footer {
+  text-align: center;
+}
+
 .footer-links {
   display: flex;
+  justify-content: center;
   gap: 1.25rem;
   margin-bottom: 0.75rem;
 }
