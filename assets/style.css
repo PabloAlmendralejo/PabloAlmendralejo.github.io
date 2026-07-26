@@ -114,6 +114,16 @@ img {
   margin-bottom: 0.25rem;
 }
 
+.publication .pub-title a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.publication .pub-title a:hover,
+.publication .pub-title a:focus {
+  color: var(--color-accent);
+}
+
 .publication .pub-authors {
   margin: 0.25rem 0;
 }
