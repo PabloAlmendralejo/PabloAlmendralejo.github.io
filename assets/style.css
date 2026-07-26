@@ -114,14 +114,17 @@ img {
   margin-bottom: 0.25rem;
 }
 
-.publication .pub-title a {
+.publication .pub-title a,
+.publication .pub-title a:visited {
   color: var(--color-text);
   text-decoration: none;
+  text-underline-offset: initial;
 }
 
 .publication .pub-title a:hover,
 .publication .pub-title a:focus {
   color: var(--color-accent);
+  text-decoration: none;
 }
 
 .publication .pub-authors {
