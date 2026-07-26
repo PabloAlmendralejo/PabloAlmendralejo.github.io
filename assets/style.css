@@ -1,0 +1,178 @@
+/* ==========================================================================
+   Hoja de estilos única — Página personal académica de Pablo Borrego Ramos
+   Sin frameworks, sin fuentes externas: solo fuentes del sistema.
+   ========================================================================== */
+
+/* Variables de diseño (Componente 2 del diseño) */
+:root {
+  --color-text: #1a1a2e;
+  --color-accent: #0b5394;     /* enlaces, acentos */
+  --color-muted: #6b7280;
+  --color-bg: #ffffff;
+  --max-width: 46rem;          /* ancho de columna de lectura */
+  --font-body: Georgia, 'Times New Roman', serif;
+  --font-ui: system-ui, sans-serif;
+}
+
+/* Base ------------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0 1.25rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+/* Columna única centrada con ancho máximo de lectura */
+.site-header,
+main,
+.site-footer {
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-body);
+  line-height: 1.25;
+  margin: 1.5em 0 0.5em;
+}
+
+h1 { font-size: 1.75rem; margin-top: 0.75em; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; }
+
+a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+a:hover,
+a:focus {
+  text-decoration-thickness: 2px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Cabecera y navegación --------------------------------------------------- */
+.site-header {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.site-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+}
+
+.site-header nav a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.site-header nav a:hover,
+.site-header nav a:focus {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.site-header nav a.active {
+  color: var(--color-accent);
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-accent);
+}
+
+/* Contenido de inicio ------------------------------------------------------ */
+.profile-photo {
+  border-radius: 50%;
+  width: 10rem;
+}
+
+/* Publicaciones (Modelo 1) ------------------------------------------------- */
+.publication {
+  margin: 2rem 0;
+}
+
+.publication .pub-title {
+  margin-bottom: 0.25rem;
+}
+
+.publication .pub-authors {
+  margin: 0.25rem 0;
+}
+
+.publication .pub-venue {
+  margin: 0.25rem 0;
+  color: var(--color-muted);
+}
+
+.publication .pub-links {
+  margin: 0.25rem 0;
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+}
+
+/* Proyectos (Modelo 2) ----------------------------------------------------- */
+.project {
+  margin: 2rem 0;
+}
+
+.project .proj-title {
+  margin-bottom: 0.25rem;
+}
+
+.project .proj-desc {
+  margin: 0.25rem 0;
+}
+
+.project .proj-tags {
+  margin: 0.25rem 0;
+  color: var(--color-muted);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+}
+
+/* Pie de página ------------------------------------------------------------ */
+.site-footer {
+  margin-top: 3rem;
+  padding: 1.25rem 0 2rem;
+  border-top: 1px solid #e5e7eb;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+/* Responsive: único breakpoint (< 640px) ----------------------------------- */
+@media (max-width: 639px) {
+  body {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+
+  h1 { font-size: 1.5rem; }
+
+  .site-header nav {
+    gap: 1rem;
+  }
+
+  .profile-photo {
+    width: 7.5rem;
+  }
+}
