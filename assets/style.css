@@ -176,3 +176,11 @@ img {
     width: 7.5rem;
   }
 }
+
+/* PDF embed ---------------------------------------------------------------- */
+embed[type="application/pdf"] {
+  display: block;
+  margin-top: 2rem;
+  border: 1px solid #e5e7eb;
+  min-height: 800px;
+}
