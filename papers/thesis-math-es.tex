@@ -1,0 +1,2083 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\pgfplotsset{compat=1.18}
+
+\usepackage[margin=3cm]{geometry}
+
+\newtheorem{proposicion}{Proposición}[section]
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{lema}{Lema}[section]
+\theoremstyle{definition}
+\newtheorem{ejemplo}{Ejemplo}[section]
+\newtheorem{definicion}{Definición}[section]
+
+\renewcommand\proofname{Demostración}
+\title{Sistemas Dinámicos Discretos en Dimensiones Bajas}
+\author{Pablo Borrego Ramos}
+\date{Junio 2025}
+
+\makeindex
+
+\begin{document}
+
+\setlength{\parskip}{0.25em}  
+
+\makeatletter
+\begin{titlepage}
+    \begin{center}
+        {\huge \bfseries Sistemas Dinámicos Discretos\\[1ex] en Dimensiones Bajas}\\[9ex]
+        \includegraphics[width=1\linewidth]{logo.png}\\[9ex]
+        {\large \bfseries Facultad de Ciencias. PCEO Matemáticas y Estadística}\\[2ex]
+    \end{center}
+
+    \vfill  % Pushes the bottom content to the bottom of the page
+
+    \begin{flushright}
+        {\large \@author}\\[2ex]
+        {\large \@date}
+    \end{flushright}
+\end{titlepage}
+\makeatother
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\thispagestyle{empty}
+\vspace*{-1cm}
+\noindent José Luis Bravo Trinidad, profesor del
+Departamento de Matemáticas de la Universidad de Extremadura, 
+
+\vspace{0.5cm}	
+\noindent INFORMA:
+\vspace{0.5cm}
+
+\noindent Que D. Pablo Borrego Ramos ha realizado bajo su direcci\'on el Trabajo Fin de Grado y considera que la memoria re\'une los requisitos necesarios para su evaluaci\'on.
+
+\vspace{2cm}
+\hfill Badajoz, 6 de junio de 2025. 
+\vspace{4cm}
+%\vfill*
+
+% Firma de los tutores
+\hspace*{-2cm}
+\begin{minipage}[t]{0.7\textwidth}
+\noindent \emph{Fdo. José Luis Bravo Trinidad}\\
+\end{minipage}
+%%
+\hspace*{1cm}
+
+\newpage
+
+\thispagestyle{empty}
+\textcolor[rgb]{1.00,1.00,1.00}{.} 
+\newpage
+
+
+\tableofcontents
+
+\newpage
+
+\section*{Resumen}
+\addcontentsline{toc}{section}{Resumen}
+Este trabajo se enfoca en el análisis de la dinámica discreta unidimensional, abordando conceptos matemáticos clave como las ecuaciones en diferencias, las bifurcaciones y los sistemas caóticos. Se exploran los sistemas dinámicos descritos por ecuaciones diferenciales, examinando cómo se comportan a través de su representación en sistemas dinámicos discretos asociados a dichas funciones.
+
+El trabajo profundiza en el análisis de la estabilidad de los puntos fijos y las órbitas mediante métodos gráficos y analíticos, como el diagrama de Cobweb y desarrollos en series de Taylor. Además, se investigan las bifurcaciones, con énfasis en los cambios cualitativos que experimentan los sistemas dinámicos bajo pequeñas perturbaciones. Estas herramientas permiten clasificar puntos fijos y estudiar sus propiedades de estabilidad e inestabilidad.
+
+Otro tema central es la introducción al caos, donde se analizan conceptos como la dinámica simbólica y la ecuación logística, que ilustran cómo los sistemas aparentemente simples pueden exhibir comportamientos complejos y caóticos.
+
+En conjunto, este trabajo proporciona un marco teórico sólido para entender y analizar sistemas dinámicos discretos.
+
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+This work focuses on the analysis of one-dimensional discrete dynamics, addressing key mathematical concepts such as difference equations, bifurcations, and chaotic systems. It explores dynamical systems described by differential equations, examining their behavior through the study of the associated discrete dynamical systems.
+
+The work explores the analysis of the stability of fixed points and orbits through graphical and analytical methods, such as the Cobweb diagram and Taylor series expansions. Additionally, bifurcations are investigated, with an emphasis on the qualitative changes that dynamical systems undergo under small perturbations. These tools are essential for classifying fixed points and studying their stability and instability properties.
+
+Another central theme is the introduction to chaos, where concepts like symbolic dynamics and logistic function are analyzed, which illustrate how seemingly simple systems can exhibit complex and chaotic behaviors.
+Summarizing, this work provides a solid theoretical framework to understand and analyze discrete dynamical systems.
+
+\chapter*{Introducción}
+\addcontentsline{toc}{section}{Introducción}
+
+El estudio de los sistemas dinámicos discretos unidimensionales surge como una herramienta esencial en la modelización matemática de procesos que evolucionan en intervalos de tiempo discretos. A diferencia de los sistemas continuos, donde las ecuaciones diferenciales describen cambios infinitesimales, los sistemas discretos capturan dinámicas que se desarrollan paso a paso, lo que los convierte en modelos idóneos para fenómenos naturales, sociales y tecnológicos donde el tiempo, o cualquier otra variable, está cuantificado en intervalos definidos.
+
+El interés por los sistemas dinámicos discretos se origina tanto en su simplicidad estructural como en su capacidad para describir fenómenos complejos. Desde el punto de vista histórico, estos sistemas han sido claves en la comprensión de problemas fundamentales. Un ejemplo notable es la famosa secuencia de Fibonacci. 
+
+Durante el siglo XIII, Fibonacci se planteó cómo evolucionaban las poblaciones de conejo cada generación, concluyó que el número de conejos en una generación se correspondía con la suma del número de conejos en las dos generaciones anteriores, lo cual se puede expresar como: $x_n = x_{n-1} + x_{n-2}$. Con este ejemplo, podemos observar que las ecuaciones en diferencias surgen de manera natural al estudiar ciertos comportamientos en distintas áreas:
+
+Biología: Modelan el crecimiento de poblaciones, la propagación de enfermedades y la dinámica de recursos naturales.
+Economía y finanzas: Simulan el comportamiento de mercados, predicen fluctuaciones económicas y optimizan estrategias financieras.
+Computación: Aparecen en algoritmos iterativos y en la generación de números pseudoaleatorios.
+Física: Describen procesos no lineales en sistemas termodinámicos y cuánticos.
+Criptografía: Los principios de la dinámica caótica en sistemas discretos han sido aplicados para diseñar esquemas seguros de encriptación.
+
+El atractivo de los sistemas discretos radica también en su capacidad de generar fenómenos complejos como bifurcaciones, caos y comportamientos periódicos o cuasi-periódicos.
+
+Este trabajo está diseñado para explorar, comprender y aplicar los fundamentos de la dinámica discreta unidimensional. A lo largo de tres capítulos, se abordarán desde los conceptos básicos hasta aspectos más avanzados.
+
+En el Capítulo~\ref{chap:dinamica_discreta}, se explora esta relación, mostrando cómo los métodos numéricos, como el método de Euler o el de Newton, permiten resolver ecuaciones diferenciales mediante discretización. Estas técnicas no solo nos permiten aproximar soluciones para ecuaciones diferenciales que carecen de soluciones analíticas exactas, sino que también establecen un vínculo natural con los sistemas dinámicos discretos. Partiendo de un problema de valor inicial, se muestra cómo las ecuaciones en diferencias emergen como herramientas fundamentales para estudiar la evolución de sistemas en puntos discretos, sentando así las bases para un análisis más amplio y profundo de la dinámica discreta.
+
+En el Capítulo~\ref{chap:bifurcaciones}, se estudian transiciones cualitativas en los sistemas dinámicos cuando se modifican los parámetros del sistema. Se exploran puntos fijos y su estabilidad, bifurcaciones de doble período y otros fenómenos críticos. Estos conceptos permiten modelar cambios en sistemas reales, como el colapso de una población o la transición a comportamientos caóticos en sistemas biológicos y económicos.
+
+En el Capítulo~\ref{chap:caos} se presenta el fenómeno del caos, caracterizado por una sensibilidad a las condiciones iniciales y una dinámica aparentemente impredecible. Se estudia la dinámica simbólica y se analiza la ecuación logística como caso paradigmático. Se demuestra cómo sistemas simples pueden generar resultados de alta complejidad.
+
+El objetivo de este trabajo es proporcionar una comprensión profunda de la dinámica discreta unidimensional, desde sus fundamentos hasta sus aplicaciones. A través de ejemplos prácticos y análisis detallados, se busca no solo formalizar los conceptos matemáticos, sino también ilustrar su utilidad en problemas concretos.
+
+\chapter{Estudio de la Estabilidad en Sistemas Dinámicos Discretos}\label{chap:dinamica_discreta}
+
+Este capítulo inicial proporciona un marco teórico robusto y herramientas prácticas que conectan los conceptos de continuidad y discreción, así como el estudio de la estabilidad de los sistemas dinámicos, abriendo paso a un entendimiento más intuitivo y visual del comportamiento dinámico a través de herramientas gráficas como el diagrama de Cobweb. Con esto, se establece el fundamento necesario para explorar fenómenos más complejos en capítulos posteriores, como las bifurcaciones y el caos.
+
+Dado un problema de valor inicial \(\dot{x} = f(x)\), \(x(t_0) = a\), se busca una aproximación de la solución en un conjunto discreto de puntos \(t_1, t_2, \ldots, t_n, \ldots \in \mathbb{R}\), donde la distancia \(h = t_{n+1} - t_n\) es constante. Comenzaremos estudiando la relación existente entre las ecuaciones en diferencias y las ecuaciones diferenciales. 
+
+\section{Ecuaciones en diferencias}
+ 
+Las ecuaciones en diferencias pueden ser empleadas como aproximaciones a ciertas ecuaciones diferenciales complejas, lo que resulta útil cuando una solución analítica es difícil o imposible de obtener.
+
+Una ecuación en diferencias es una expresión de la forma:
+\[
+G(n, x_n,x_{n+1}, \ldots, x_{n+k}) = 0, \quad \forall n \in \mathbb{N},
+\]
+%
+Donde  $G:\mathbb{N} \times \mathbb{R}^{k+1}  \mapsto \mathbb{R}$ 
+
+Decimos que una ecuación en diferencias es de orden $k+1$ si después de simplificar esta expresión quedan los términos 
+\( x_{n+k_1} \) y \( x_{n+k_2} \) como el mayor y el menor,  donde \( k +1= k_1 - k_2 \).
+
+Además diremos que una ecuación en diferencias de orden $k+1$,  
+
+$G(n, x_n,x_{n+1}, \ldots, x_{n+k}) = 0, \, \forall n \in \mathbb{N}$ es explícita de orden $k+1$ cuando podamos expresarla de la forma: 
+\[
+G(n, x_n,x_{n+1}, \ldots, x_{n+k-1}) = x_{n+k}, \quad \forall n \in \mathbb{N},
+\]
+%
+Si $G$ es lineal, es decir, puede expresarse de la forma:
+\[
+p_0(n)x_{n+k} + p_1(n)x_{n+k-1} + \dots + p_k(n)x_{n} = g(n),
+\]
+donde los coeficientes \( p_i \) son funciones definidas en \( \mathbb{N} \)
+
+Denominaremos solución de la ecuación en diferencias a toda función 
+$$
+x : \mathbb{N} \mapsto \mathbb{R}
+$$ 
+Que satisfaga la ecuación anterior.
+A la imagen de las soluciones de las ecuaciones las llamaremos órbita, es decir, al conjunto $\{x_n\colon n\in\mathbb{N} \}$. 
+
+Dada una ecuación explícita de orden $k+1$, cada solución queda determinada por $x_0, x_1 \ldots x_{k}$ valores iniciales, ya que 
+
+$G(n,x_{0}, \ldots, x_{k}) = x_{k + 1}, \ldots$  
+$ G(n, x_n,x_{n+1}, \ldots, x_{n+k-1}) = x_{n+k} \ldots$.
+
+Para construir una solución de una ecuación de orden $k$ se precisan exactamente $k$ condiciones iniciales $x_0, x_1 \ldots x_{k-1}$. 
+
+Si estos coeficientes son constantes, la ecuación toma una forma más sencilla:
+\[
+a_0x_{n+k} + a_1x_{n+k-1} + \dots + a_kx_{n} = g(n).
+\]
+%
+Distinguimos entre ecuación autónoma cuando el tiempo $n$ no aparece explícitamente en la ecuación, y no autónoma cuando sí lo hace.
+
+En este trabajo nos centraremos en las ecuaciones en diferencias unidimensionales de primer orden, autónomas y explícitas, es decir, cuando la función $G$ tiene como dominio $\mathbb{N} \times \mathbb{R}$ y la ecuación en diferencias es de la forma:
+\[x_{n+1} = f(x_n),\quad \text{donde } f : \mathbb{R} \mapsto  \mathbb{R} \]
+
+\subsection{El diagrama de Cobweb}
+
+A continuación presentamos un método ilustrativo que nos permite obtener una representación gráfica de las órbitas de las soluciones de una ecuación diferencial.
+
+En general, el estudio de los puntos fijos de una función escalar es equivalente al estudio de los ceros de la función $f(x) - x $, gráficamente, la intersección de la función $f$ con la función identidad.
+
+Dada una función escalar $f$ y un punto $x_0$, consideramos la ecuación en diferencias $x_{n+1} = f(x_n)$, sea $\{ x_0$, $f(x_0)$, $f^2(x_0)$, $\ldots \}$ una solución de dicha ecuación en diferencias, denotémosla $ \{ x_0$, $x_1$, $x_2 $, $\ldots \}$. Para obtener una  representación gráfica de la dinámica de la solución seguimos los siguientes pasos:
+
+\begin{enumerate}
+    \item Tomar el punto $(x_0,x_1)$.
+    \item Tomar el punto que interseca la identidad con la recta horizontal que pasa por  $(x_0,x_1)$, es decir, el $(x_1,x_1)$
+    \item Tomar el punto que interseca a $f$ con la recta vertical que pasa por $(x_0,x_1)$, este es $(x_1,f(x_1))$
+\end{enumerate}
+
+Repitiendo este proceso de forma iterativa obtenemos una representación gráfica de la órbita, además si vamos dibujando los pasos obtenemos una visión más amplia de la dinámica de la función.
+
+A continuación mostramos un ejemplo que nos muestra como la dinámica de una ecuación en diferencias depende en gran medida de la parte lineal de la ecuación.
+
+\begin{ejemplo}
+
+Consideremos la función en diferencias lineal:
+\[
+x_{n+1} = ax_n, \quad
+\]
+donde \( a \) es un parámetro real. Es fácil ver que la órbita de un valor inicial \( x_0 \) es el conjunto de puntos \( x_n = a^n x_0 \), para \( n = 0, 1, 2, \ldots \). Los diagramas de Cobweb para los valores de los parámetros \( a = 2.0 \), \( a = 0.5 \), \( a = -0.5 \), \( a = -2.0 \), \( a = 1.0 \) y \( a = -1.0 \) se muestran en la Figura~\ref{fig:Figura1}. Donde se muestra el procedimiento de Cobweb en acción sobre la función $f(x) = ax$ para distintos valores de $a$ y tomando $x_0 = 1$ como valor inicial. 
+
+Observar que cuando \( a > 0 \), la órbita es monótonamente creciente o decreciente a un lado del punto fijo. Sin embargo, cuando \( a < 0 \), una órbita salta de forma alternada a cada lado del origen y $f'(x)$ no es estrictamente mayor que $0$, algo que no ocurre en ecuaciones diferenciales escalares debido a la existencia y unicidad de soluciones, que hace que las soluciones estén siempre a un lado del $0$. 
+Consideramos los casos particulares $a = \pm 1$.
+
+Cuando $a = 1$ la función es la identidad y por tanto todos los elementos de $\mathbb{R}$ son puntos fijos.
+
+Cuando $a = -1$ ocurre que  $x_{n+1} = - x_{n}$ y por tanto $x_{n+2} = x_{n}$, en este caso no tenemos puntos fijos además del origen.
+
+Estudiemos los casos generales $|a| < 1$ y $|a| > 1$.
+
+Cuando $|a| < 1$ partiendo de un punto $x_0$ cualquiera tenemos que $x_{n+1} = a^{n+1}x_0$, como $|a| < 1$ ocurre que $a^{n+1} \to 0$ cuando $n \to \infty$, por tanto el límite de la solución $x_{n+1} \to 0$.
+En cambio cuando $|a| > 1$ ocurre lo contrario, es decir, como $a^{n+1} \to \infty$ cuando $n \to \infty$, por tanto, la solución $x_{n+1} = a^{n+1}x_0$ de la ecuación en diferencias tiende a $\infty$.
+    
+\end{ejemplo}
+
+
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig3.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $f(x) = ax$ cuando $a = 0.5$}
+        \label{fig:mi_imagen_5}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig4.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $f(x) = ax$ cuando $a = -0.5$}
+        \label{fig:mi_imagen_4}
+    \end{subfigure}
+    \caption{}
+    \label{fig:Figura1}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig33.png}
+        \caption{Diagrama de Cobweb a la función $f(x) = ax$ cuando $a = 1$}
+        \label{fig:mi_imagen_51}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig32.png}
+        \caption{Diagrama de Cobweb a la función $f(x) = ax$ cuando $a = -1$}
+        \label{fig:mi_imagen_41}
+    \end{subfigure}
+
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig2.png}
+        \caption{Diagrama de Cobweb a la función $f(x) = ax$ cuando $a = 2$}
+        \label{fig:mi_imagen_2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig5.png}
+        \caption{Diagrama de Cobweb a la función $f(x) = ax$ cuando $a = -2$}
+        \label{fig:mi_imagen_3}
+    \end{subfigure}
+    \caption{Diagrama de Cobweb para $a = 0.5, -0.5 , 1, -1, 2, -2$.}
+    \label{fig:Figura2}
+\end{figure}
+
+
+\section{Algunas ecuaciones en diferencias}
+
+En esta sección, mostraremos algunos ejemplos de ecuaciones en diferencias que aparecen en otras partes de las matemáticas, en concreto, en las ecuaciones diferenciales y los métodos numéricos. Pero antes, definamos un concepto fundamental en el estudio de la dinámica:
+
+\begin{definicion} 
+Dada una función $f: \mathbb{R} \rightarrow \mathbb{R}$ y un punto $x_0$ denominamos órbita de $x_0$ a la sucesión $ \{x_0, f(x_0), f^2(x_0) \dots \}$  que denotaremos por $\gamma^+(x_0)$.
+\end{definicion}
+
+La órbita una una función $f$ en un punto $x_0$ no es más que la solución de la ecuación en diferencias $x_{n+1} = f(x_n)$ con condición inicial $x_0$.
+
+\subsection{Método de Euler}
+
+La discretización consiste en convertir una ecuación diferencial continua en una ecuación en diferencias, evaluándola en un conjunto finito o infinito numerable de puntos en el tiempo. Esto permite aproximar la solución de la ecuación diferencial mediante una secuencia de valores discretos.
+
+A continuación, explicaremos el método de Euler, es el método más sencillo, que establece una relación directa entre las ecuaciones diferenciales y las ecuaciones en diferencias. Este método permite aproximar la solución de una ecuación diferencial mediante una serie de valores discretos, facilitando su resolución numérica a través de ecuaciones en diferencias.
+
+El método de Euler discretiza la derivada de la función reemplazando \(\dot{x}(t)\) por el cociente de diferencias \((x_{n+1} - x_n)/h\). Así, la ecuación diferencial \(\dot{x} = f(x)\) se transforma en una ecuación en diferencias:
+\[
+x_{n+1} = x_n + h f(x_n).
+\]
+%
+Dado $x_0$, todos los demás valores aproximados $x_1, x_2, \ldots, x_n, \ldots$ pueden calcularse en sucesión utilizando esta fórmula. Esta sucesión de números es la solución de la ecuación en diferencias de valor inicial $x_0$.
+
+
+
+Vamos a ilustrar el procedimiento anterior en la ecuación logística:
+\[
+\dot{x} = ax(1 - x), \quad  a > 0.
+\]
+%
+ Donde el parámetro \( a \) representa la tasa de crecimiento intrínseca en un modelo poblacional. Esta ecuación describe cómo una población crece rápidamente cuando es pequeña y los recursos son abundantes, pero eventualmente su crecimiento se ralentiza y se estabiliza debido a la limitación de recursos disponibles. El término \( (1 - x) \) modela el efecto de estos recursos limitados, reduciendo la tasa de crecimiento conforme \( x \) se acerca al valor máximo de \( x = 1 \).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{fig1.png}
+    \caption{Ecuación logística cuando \( a = 2 \).}
+    \label{fig:mi_imagen}
+\end{figure}
+
+Esta ecuación en diferencias es ampliamente utilizada en biología y ciencias sociales para representar el crecimiento de poblaciones donde los recursos son limitados. En el caso ilustrado, cuando tomamos el valor inicial \( x(0) = 1 \), la población comienza en su capacidad máxima y no crece más allá de ese punto, reflejando una situación de equilibrio. Por otro lado, si \( x(0) \) es pequeño, la población inicialmente crecerá casi exponencialmente debido a la abundancia de recursos, pero eventualmente su tasa de crecimiento se reducirá hasta estabilizarse en \( x = 1 \), conocido como el límite de carga del sistema. 
+
+Aproximemos la ecuación logística con el algoritmo de Euler y definamos
+\[
+b = ha
+\]
+%
+para obtener la siguiente ecuación en diferencias:
+\[
+x_{n+1} =x_n + bx_n(1-x_n) = bx_n \left( \frac{1 + b}{b} - x_n\right). 
+\]
+%
+A partir de esta fórmula podemos determinar los valores $x_0,x_1,x_2, \dots$, los cuales representan el valor que toma la solución de $\dot{x}(t) = f(x)$ en los instantes $nh$. Notar que cuanto más pequeño sea $h$, más información tendremos sobre la solución. 
+
+Estudiemos el papel que juega $h$ a medida que aumentamos el valor de $a$, podemos estudiar esta relación a través de $b$. Si $b$ es muy pequeño, es decir, si $h$ es muy pequeño en relación con $a$, entonces, para cualquier valor inicial en el intervalo $(0, 1)$, la solución de la  ecuación en diferencias anterior converge monótonamente a $1$ a medida que $n \to +\infty$.
+
+Para ver esto hay que considerar la función que origina dicha ecuación en diferencias, $g(x) = x + bx(1-x)$, entonces $g'(x) = 1 - 2bx$, cuando $b$ sea pequeño $g'(x) > 0 \; \forall x \in (0,1)$ y por tanto $x_{n+1} > x_n \; \forall n \in \mathbb{N}$. Por otra parte si $g'(x)$ se anula en el intervalo $(0,1)$ dicho valor es un máximo local, y como $g(1) = 1$ concluimos que en dicho caso la sucesión no sería monótona, como esto solo ocurre para valores grandes de $b$ concluimos que cuando $b$ es pequeña la solución de la ecuación en diferencias converge monótonamente a $1$.
+
+
+
+Las dificultades comienzan a ocurrir cuando $b > 1$. Dado que $b = ha$, tomemos, por ejemplo, $a = 1000.0$ y $h = 0.002$. Numéricamente, $h = 0.002$ parece ser un tamaño de paso pequeño, pero está sobrecompensado por el valor de $a$ en la ecuación diferencial. Por ejemplo, la solución de la ecuación en diferencias anterior con $b = 1.3$ y $x_0 = 0.567$, que se muestra en la Figura~\ref{Figura3}, tiene poco parecido con la órbita correspondiente de la ecuación diferencial. Estos problemas se estudiaran con más profundidad más adelante.
+
+
+\begin{figure}[H]
+
+    \centering
+    \includegraphics[width=0.6\textwidth]{fig50.png}
+    \caption{Diagrama de Cobweb a la función $f(x) = x + bx(1-x)$ con $b = 1.3$ y $x_0 = 0.567$}
+    \label{Figura3}
+\end{figure}
+
+
+
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig37.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb de la ecuación logística cuando $a = 2$}
+        \label{fig:mi_imagen_9}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig38.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb de la ecuación logística cuando $a = 2.5$}
+        \label{fig:mi_imagen_10}
+    \end{subfigure}
+    \caption{}
+    \label{fig:mi_imagen_total1.2}
+\end{figure}
+
+
+
+
+ 
+\subsection{Método de Newton}
+
+Este método tiene como función principal encontrar las soluciones de una ecuación $ f(x) = 0$. Partimos de una función \( f(x) \) y un punto inicial \( x_0 \).
+
+Sea \( x_1 \) el punto de intersección entre el eje \( x \) y la recta tangente a la gráfica de \( f(x) \) en \( (x_0, f(x_0)) \).
+La ecuación de la tangente es:
+\[
+y - f(x_0) = f'(x_0)(x - x_0)
+\]
+%
+Despejando el punto de corte con el eje \( x \),
+\[
+x_1 = x_0 - \frac{f(x_0)}{f'(x_0)}.
+\]
+%
+Repitiendo el proceso,
+\[
+x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}
+\]
+%
+Como ejemplo, consideremos la función $f(x) = x^2 - 2$, que tiene dos ceros en $\pm \sqrt{2}$. Para esta función, la ecuación en diferencias anterior se convierte en:
+\[
+x_{n+1} = \frac{x_n}{2} + \frac{1}{x_n}. 
+\]
+%
+Si comenzamos con un valor inicial, por ejemplo, $x_0 = 3$, entonces la solución de esta ecuación en diferencias converge a $\sqrt{2}$:
+\[
+3.00000,\quad 1.833333,\quad 1.46212,\quad 1.41499,\quad 1.41421,\quad \ldots
+\]
+%
+De hecho, se puede probar que cualquier solución con valor inicial $x_0 > 0$ converge a $\sqrt{2}$, y con $x_0 < 0$ converge a $-\sqrt{2}$. En~\cite{ref5} se puede encontrar una demostración detallada.
+
+El estudio de los ceros de $f(x) = x^2 - 2$ es equivalente al estudio de los puntos fijos de la función $f(x) = x^2 - 2 + x$, por tanto podemos utilizar un diagrama de Cobweb para obtener los ceros de $f(x) = x^2 - 2$ gráficamente.
+
+\begin{figure}[H]
+
+    \centering
+    \includegraphics[width=0.6\textwidth]{fig39.png}
+    \caption{Diagrama de Cobweb a la función $f(x) = x^2 - 2 + x$}
+    \label{fig:mi_imagen_cobweb}
+\end{figure}
+
+Observamos que el diagrama no consigue acercarse a los puntos fijos de la función, la órbita muestra un comportamiento errático. Estudiaremos este tipo de comportamiento en la sección $3$.
+
+Notar que esto no es más que un caso particular del método de Euler tomando como ecuación diferencial 
+\[
+\dot{x} = - \frac{f(x)}{f'(x)}.
+\]
+%
+
+ 
+\section{Dinámica discreta de las funciones escalares}
+
+Comenzamos estudiando la dinámica de las funciones escalares, es decir, cómo se comportan las soluciones de la ecuación en diferencias autónoma de primer orden cuando vamos aumentando el número de iteraciones.
+Dado un punto $x_0$ y una función $f: \mathbb{R} \rightarrow \mathbb{R}$, sea $\{x_n \}_{n \in \mathbb{N}}$ una solución de la ecuación en diferencia $x_{n+1} = f(x_n)$, veamos que forma tiene:
+$x_1 = f(x_0)$, $x_2 = f(x_1) = f(f(x_0))$,  $x_3 = f(x_2) = f(f(f(x_0))) \ldots $, es decir, $x_n = f^n(x_0)$
+
+
+Por comodidad, denotaremos $f^n$ a la función $f$ compuesta consigo mismo $n$ veces. La órbita de un punto $x_0$ no es más que la solución de la ecuación en diferencias $x_{n+1} = f(x_n)$ tomando como condición inicial $x_0$. 
+
+
+\begin{definicion}
+
+Un sistema dinámico discreto unidimensional es una terna $\{E,\mathbb{N}, \varphi\}$ donde $E$ es un espacio topológico y $\varphi: D \subset \mathbb{N} \times E \to E$, siendo $D$ una región, además, debe cumplir las siguientes propiedades:
+
+\begin{enumerate}
+    \item Para todo $x \in E$, se tiene que
+    \[
+    \varphi(0, x) = x.
+    \]
+
+    \item Para todos $s, t \in \mathbb{N}$ y $x \in E$, se tiene que si $(t, x), (s, \varphi(t, x)) \in D$, entonces $(t + s, x) \in D$ y
+    \[
+    \varphi(t + s, x) = \varphi(s, \varphi(t, x)).
+    \]
+\end{enumerate}
+
+
+Si $\{E, \mathbb{N}, \varphi\}$ es un sistema dinámico,
+\begin{itemize}
+    \item $E$ se denomina espacio de estados. $x \in E$ es un estado inicial.
+    \item $\mathbb{N}$ se denomina espacio de tiempos.
+    \item $\varphi$ se denomina flujo.
+\end{itemize}
+    
+\end{definicion}
+
+
+\begin{definicion}
+Dada una función $f: \mathbb{R} \rightarrow \mathbb{R}$ y un punto $\hat{x}$ diremos que $\hat{x}$ es un punto fijo cuando $f(\hat{x})=\hat{x}$. 
+\end{definicion}
+ 
+\begin{proposicion}
+Un punto $x_0 \in \mathbb{R}$ es un punto fijo de $f $ si y solo si es solución constante de la ecuación en diferencias $x_{n+1} = f(x_n)$.
+\end{proposicion}
+
+\begin{proof}
+
+Si $x_0$ es un punto fijo de $f$ entonces $f(x_0) = x_0$ y por tanto $f^n(x_0) = x_0$, se deduce que $x_{n+1} = f(x_n) = f^2(x_{n-1}) = \ldots = f^n(x_0) = x_0$.
+
+Si $x_0$ es solución constante de $x_{n+1} = f(x_n)$ se cumple que $f(x_0) = x_0$ es decir, $x_0$ es un punto fijo.
+
+\end{proof}
+
+\begin{definicion}
+Un punto fijo $\hat{x}$ de una función escalar $f$ es estable si para todo $\varepsilon > 0$ existe un $\delta > 0$ de tal forma que para todo $ x_0$ tal que $|x_0 - \hat{x}| < \delta$  se cumple que $|f^n(x_0) - \hat{x}| < \varepsilon $ para todo $ n \in \mathbb{N}$. 
+
+Por el contrario, diremos que un punto fijo es inestable cuando no es estable, es decir, existe un $ \varepsilon$ que verifica que para todo $\delta > 0$ existe un $x_0$ tal que $|\hat{x} - x_0| < \delta$ y $|\hat{x} - f^n(x_0)| > \varepsilon $ para algún $n \in \mathbb{N}$.
+\end{definicion}
+
+El hecho de que un punto fijo sea inestable no quiere decir que a medida que se aumenten las iteraciones el valor inicial se va alejando del punto fijo; es más, puede pasar que tras un número de iteraciones la órbita no vuelva a salir del punto fijo, como se ilustra en el siguiente ejemplo:
+
+\begin{ejemplo}
+
+Sea
+\[
+f(x) = 
+\begin{cases}
+2x, & \text{si } -5 < x < 5, \\
+0, & \text{en caso contrario}.
+\end{cases}
+\]
+Esta función tiene un único punto fijo en el $0$. Si tomamos un $x_0$ en el soporte de la función, entonces el valor (en módulo) de las iteraciones irá aumentando hasta que supere los valores máximos del soporte ($5$ y $-5$) y por tanto el resto de iteraciones irán a parar al punto fijo. Este comportamiento queda ilustrado la Figura~\ref{fig:mi_imagen22}:
+
+\end{ejemplo}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{fig36.png}
+    \caption{Diagrama de Cobweb a la función $f(x) = 2x$ cuando $-5<x<5$ y $0$ en el caso contrario tomando $x_0 = 0.1$.}
+    \label{fig:mi_imagen22}
+\end{figure}
+
+\begin{definicion}
+
+Un punto fijo \(\hat{x}\) del $f$ es un atractor global si para cada \(x_0 \in \mathbb{R}\), resulta
+\[
+\lim_{n \to \infty} x_n = \hat{x}.
+\]
+Siendo \(x_n = f^n(x_0)\)
+\end{definicion} 
+
+\begin{definicion}
+
+Un punto fijo \(\hat{x}\) del $f$ es un atractor local si existe \(\delta > 0\) tal que, para cada \(x_0 \in (\hat{x} - \delta, \hat{x} + \delta)\), resulta
+\[
+\lim_{n \to \infty} x_n = \hat{x}.
+\]
+Siendo \(x_n = f^n(x_0)\)
+\end{definicion}
+
+Es decir, un punto fijo es atractor local si atrae solo a los puntos que se encuentran en un determinado entorno suyo, mientras que es atractor global si atrae a todos los puntos del espacio de fases. Hemos de tener en cuenta que convergencia no tiene por qué implicar monotonía, es decir, si una sucesión converge a un punto, no ha de converger de forma monótona a él, sino que puede alternar valores próximos y lejanos en su trayectoria.
+
+\begin{definicion}
+
+Un punto fijo $\hat{x}$ de $f$ se dice globalmente (localmente) asintóticamente estable si satisface:
+\begin{itemize}
+    \item $\hat{x}$ es estable.
+    \item $\hat{x}$ es atractor global (local).
+\end{itemize}
+
+\end{definicion}
+
+De manera analítica, la definición anterior puede expresarse de la siguiente forma.
+
+\begin{definicion}
+
+Un punto fijo $\hat{x} $ de  $f$ es localmente asintoticamente estable cuando es estable y además $\exists r > 0$ de tal forma que si un $x_0 \in \mathbb{R}$ cumple que $|x_0 - \hat{x}| < r$ entonces $f^n(x_0) \rightarrow \hat{x}$ cuando $n \rightarrow \infty$.
+
+\end{definicion}
+
+La definición de punto localmente asintóticamente estable puede parecer redundante, pues parece que todo atractor local es estable. Esto no es cierto en un principio, es más, en sistemas dinámicos discretos donde \(f\) no es continua en el espacio de fases, esto no es cierto en general.
+
+En el resto del trabajo trataremos únicamente con puntos fijos localmente asintóticamente estables; por comodidad, nos referiremos a ellos como puntos asintóticamente estables.
+
+\begin{definicion}
+
+Dado un punto fijo $\hat{x} $ de una función escalar diferenciable $f$ diremos que $\hat{x}$ es un punto hiperbólico cuando $|f'(\hat{x})| \neq 1$.
+\end{definicion}
+
+La estabilidad de un punto fijo de una función escalar $f$ es una propiedad local de la dinámica en ese punto. Esto nos permite, bajo ciertas condiciones, estudiar la estabilidad de un punto fijo a través de su linealizado. Antes de estudiar el Teorema vamos a ver que las traslaciones conservan la dinámica.
+
+\begin{lema}
+Dada una función $f$ y una constante $a$, consideremos la función $g(x) = f(x + a) - f(a)$; entonces, las soluciones de las ecuaciones en diferencias $x_{n+1} = f(x_n)$ y $g(x_n - a) = x_{n+1} - a$ son las mismas.
+    
+\end{lema}
+
+\begin{proof}
+
+Veamos que el cambio de variables conserva las soluciones de las ecuaciones en diferencias $x_{n+1} = f(x_n)$. Sea $\{x_n\}_{n\in\mathbb{N}}$ solución de $x_{n+1} = f(x_n)$ entonces $\{x_n-a\}_{n \in \mathbb{N}}$ es solución de $x_{n+1} = g(x_n)$, ya que $g(x_n - a) = f(x_n - a +a) - f(a) = f(x_n) - a = x_{n+1} - a$.
+Por otra parte si $\{x_n\}_{n\in\mathbb{N}}$ es solución de $x_{n+1} = g(x_n)$ entonces $\{x_n+a\}_{n \in \mathbb{N}}$ es solución de $f(x_n) = x_{n+1}$ ya que $f(x_n + a) = g(x_n) + a = x_{n+1} + a$.
+
+Como los puntos fijos se corresponden con las soluciones constantes, $x_0$ es punto fijo de $f$ si y sólo si $x_0 -a$ es punto fijo de $g$.
+ 
+\end{proof}
+
+A continuación mostraremos que si el punto fijo es hiperbólico, entonces la estabilidad de dicho punto depende del valor del linealizado de la función.
+
+\begin{teorema}\label{Teorema1.3.1}
+Sea $f$ una función escalar de clase 1 y $\hat{x}$ un punto fijo hiperbólico de $f$.
+\begin{itemize}
+    \item $|f'(\hat{x})| <1$ $\Rightarrow$ $\hat{x}$ es asintoticamente estable 
+    \item $|f'(\hat{x})| > 1 $ $\Rightarrow$  $\hat{x}$ es inestable
+\end{itemize}
+\end{teorema}
+
+
+\begin{proof}
+Por comodidad, a través de una traslación podemos considerar el punto $(0,0)$ en vez de $(\hat{x},f(\hat{x}))$. Para ello, consideramos una nueva variable $ u = x - \hat{x}$ con $x \in \mathbb{R} $ y una nueva función $g$: 
+$$
+g(u) = f(\hat{x} + u) - f(\hat{x}) 
+$$
+%
+Evidentemente $g(0)=0$ y por la proposición anterior sabemos que el cambio de variable conserva las soluciones de las ecuaciones en diferencias, y en particular los puntos fijos. Ademas, notar que $g'(u) = f'(\hat{x} + u)$ .
+ 
+Fijamos $\varepsilon > 0 $ y definimos:
+$$
+m_\varepsilon =  \min_{|s| \leq \varepsilon}|g'(s)|, \quad M_\varepsilon = \max_{|s| \leq \varepsilon}|g'(s) |
+$$
+%
+Que representan la máxima y mínima pendiente de la función en un entorno del punto fijo. Tomando \( u \in (-\varepsilon,\varepsilon)\) tenemos:
+\[
+m_\varepsilon |u| \leq |g(u)| \leq M_\varepsilon |u|.
+\]
+%
+Demostremoslo. Supongamos que \( u > 0 \). Gracias al Teorema del Valor Medio (TVM), sabemos que existe un \( c \in (0,u) \) tal que:
+\[
+g(u) - g(0) = g'(c)(u - 0)
+\]
+%
+Dado que \( g(0) = 0 \), tenemos que \( g(u) = g'(c)u \). Como \( c \in (0,u) \subset (0,\varepsilon) \), se cumple que \( m_\varepsilon \leq |g'(c)| \leq M_\varepsilon \), y por lo tanto:
+\[
+|g(u)| = |g'(c)u| = |g'(c)| |u| \leq M_\varepsilon |u|
+\]
+%
+y también:
+\[
+m_\varepsilon |u| \leq |g'(c)| |u| = |g'(c)u| = |g(u)|
+\]
+%
+La demostración para el caso \( u < 0 \) es análoga.
+
+Si $g^n(u) \in (-\varepsilon,\varepsilon)$ para $n \in \{0,1 \ldots k\}$, donde $k \in \mathbb{N}$, entonces se cumple que:
+$$
+|u|  m^n_\varepsilon \leq |g^n(u)| \leq  |u|  M^n_\varepsilon \quad \forall n \in \{0,1 \ldots k\}
+$$
+%
+Demostremoslo por inducción. Ya lo hemos probado para $n = 1$, supongamoslo cierto para $n-1$ y demostremoslo para $n$:
+$$|g^n(u)| = |g^{n-1}(g(u))| \leq |g(u)|M_\varepsilon^{n-1} \leq |u|M_\varepsilon M_\varepsilon^{n-1} = |u| M_\varepsilon^{n}$$
+y
+%
+$$|g^n(u)| = |g^{n-1}(g(u))| \geq |g(u)|m_\varepsilon^{n-1} \geq |u|m_\varepsilon m_\varepsilon^{n-1} = |u| m_\varepsilon^{n}$$
+%
+Cuando \( |g'(0)| < 1 \), dado que \( g \) es de clase \( \mathcal{C}^1 \), existe un entorno de \( 0 \) en el que \( |g'(x)| \) es menor que 1. Es decir, existe \( \delta > 0 \) tal que \( M_\delta < 1 \). Si además \( |u| \leq \delta \), tenemos que:
+\[
+|g(u)| \leq M_\delta |u| < |u| < \delta.
+\]
+%
+Ahora, veamos que \( |g^n(u)| < \delta \) para todo \( n \in \mathbb{N} \). Demostraremos esto por inducción. Ya hemos probado el caso base para \( n = 1 \). Supongamos que se cumple para \( n - 1 \), es decir:
+\[
+|g^{n-1}(u)| < \delta.
+\]
+Entonces,
+$$
+|g^n(u)|  = |g^{n-1}(g(u))| \leq |g(u)|  M^{n-1}_\delta   \leq |u| M_\delta  M^{n-1}_\delta = |u|  M^{n}_\delta   \leq \delta  M^n_\delta    < \delta
+$$
+%
+Hemos demostrado que:
+$$ |g^n(u)| \leq \delta \quad \forall n \in \mathbb{N}$$
+%
+Con esto hemos conseguido que para todo $\varepsilon  > 0$ $  \exists  \delta  $ tal que si $ |u-0| < \delta $ entonces $ |g^n(u) - g(0)| < \varepsilon$  $ \forall n \geq 0 $ es decir, el punto $(0,0)$ es estable. 
+Además es asintoticamente estable ya que como $ M_\delta  < 1$ entonces $ M^n_\delta  \rightarrow 0$ cuando $n \rightarrow +\infty$ y como $|g^n(u)| \leq |u| M^n_\delta   $ entonces $ g^n(u) \rightarrow g(0)=0$ cuando $n \rightarrow +\infty$
+
+Ya hemos demostrado la primera parte del Teorema, ahora estudiemos la estabilidad cuando $|g'(0)| > 1$.
+
+Al ser $g$ de clase $1$ existe un $\delta > 0$ tal que si $|x - \hat{x}| < \delta$ entonces $|g'(x)| > 1$, esto se demuestra razonando de forma idéntica al caso anterior. 
+
+Para demostrar que $\hat{x}$ es inestable basta ver que existe un  $\hat{n} \in \mathbb{N}$ tal que $g^{\hat{n}}(u) \notin (-\delta,\delta)$ para cualquier $u \in (-\delta,\delta)$ ya que entonces para todo $\varepsilon > \delta$ y todo $\tau > 0$ si $|x| < \tau$ entonces $|g^{\hat{n}}(x)| > \delta $ cuando $|x| < \delta$.
+
+Supongamos que $g^n(u) \in (-\delta,\delta)$ para todo $n \in \mathbb{N}$ y todo $u \in (-\delta,\delta)$.
+Como $|f'(\hat{x})| > 1$ tenemos que  $ \exists \delta > 0 \text{ tal que } m_\delta > 1$, teniendo en cuenta la siguiente desigualdad:
+\[
+|u| m^n_\delta \leq |g^n(u)|
+\]
+%
+Tendríamos entonces que $|u|m^n_{\delta}$ estaría acotada, lo que está en contradicción, pues su límite es infinito. De esta contradicción obtenemos que para todo $\delta$, $g^n(u) \notin (-\delta,\delta)$ para cierto $n\in\mathbb{N}$ y cierto $u\in (-\delta,\delta)$, es decir, el punto es inestable.
+
+\end{proof}
+
+Notar que cuando las órbitas están acotadas y el punto fijo es estable, la órbita puede presentar un comportamiento errático que estudiaremos más adelante; esto quedó ilustrado en la Figura~\ref{fig:mi_imagen_cobweb}.
+
+El teorema anterior dice que si un punto fijo es hiperbólico entonces es estable o inestable.
+¿Pero qué ocurre cuando el punto fijo no es hiperbólico? En este caso, la primera derivada no nos da información sobre la estabilidad; sin embargo, sí podemos estudiar la estabilidad a través de la segunda y tercera derivada. A continuación, mostramos una serie de ejemplos en los cuales los puntos fijos no son hiperbólicos y tienen distinta estabilidad. Terminaremos la sección con un Teorema que da solución a esta situación.
+
+En el siguiente ejemplo, ilustramos la estabilidad de un punto fijo no hiperbólico en el caso en que \( f'(\hat{x}) = 1 \) y \( f''(\hat{x}) > 0 \).
+
+\begin{ejemplo}
+
+Consideremos la función escalar $f(x) = x + x^2 $, con derivadas $f'(x) = 2  x + 1$ y $f''(x) = 2$. En esta función el $0$  es un punto fijo y no hiperbólico ya que $f(0) = 0 $ y $f'(0) = 1$. En la Figura ~\ref{fig:mi_imagen_total1.6} podemos observar que cuando $x_0 > 0$ (Diagramas $a) \text{  y  } c)$)  la órbita diverge a infinito, cuanto más grande sea $x_0$ más rápido diverge, en cambio cuando $x_0 < 0$ (Diagramas $b) \text{ y } d)$) las iteraciones tienden al punto fijo $0$.
+
+Para un estudio más detallado centrémonos en la expresión analítica de la función $f$, podemos observar que si tomamos $x_0 \in (0, \infty)$ este tiende al $\infty$, en cambio, si tomamos un valor inicial $x_0 \in [-1,0]$ este tiende al punto fijo $0$ por último, si tomamos $x_0 \in (-\infty, -1)$ se observa que $x_1 
+ = f(x_0) = x_0 + x_0^2 > 0$ ya que como $x_0 < -1$ entonces $x_0^2 > x_0$, por tanto en este caso tras una iteración pasamos al caso $x_0 \in (0,\infty)$ que ya hemos visto que diverge a infinito. Por este motivo concluimos que el punto fijo $0$ es inestable pues para todo entorno $(-\delta,\delta)$ de $0$  ocurre que $\forall x \in (0, \delta) \; f^n(x) \mapsto \infty$ cuando $n \to \infty$. 
+    
+\end{ejemplo}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig6.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $f(x) = x + x^2 $ partiendo de $x_0 = 0.2$}
+        \label{fig:mi_imagen_24}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig7.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $f(x) = x + x^2 $ partiendo de $x_0 = -0.2$}
+        \label{fig:mi_imagen_25_1}
+    \end{subfigure}
+
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig34.png}  % Reemplaza 
+        \caption{Diagrama de Cobweb a la función $f(x) = x + x^2 $ partiendo de $x_0 = 1$}
+        \label{fig:mi_imagen_26_1}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig35.png}  % Reemplaza 
+        \caption{Diagrama de Cobweb a la función $f(x) = x + x^2 $ partiendo de $x_0 = -1$}
+        \label{fig:mi_imagen_27_1}
+    \end{subfigure} 
+    \caption{}
+    \label{fig:mi_imagen_total1.6}
+\end{figure}
+
+En el siguiente ejemplo, mostramos la estabilidad de un punto fijo hiperbólico cuando $f'(\hat{x}) = -1$ y $f''(\hat{x}) < 0$. 
+
+\begin{ejemplo}
+
+Consideremos la función escalar $f(x) = -x -3x^2$ , con derivadas $f'(x) = -1 - 6x$ y $f'(x) = - 6$. Al igual que el ejemplo anterior $0$ es un punto fijo hiperbólico de $f$ ya que $f(0) = 0$ y $f'(0) = 1$,  a través de las imágenes podemos ver que se trata de un punto fijo estable,ver  Figura~\ref{fig:mi_imagen_8},  una manera más rigurosa de verlo es considerar la segunda iteración de $f$, $f^2(x) = -27x^4 -18x^3 + x$, tomando un valor cercano a $0$ $f^2$ devuelve un valor más próximo a $0$, por tanto el resto de iteraciones sobre dicho punto tiende a $0$. 
+
+\end{ejemplo}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{fig8.png}
+    \caption{Diagrama de Cobweb sobre $f(x) = -x -3x^2$ tomando como valor inicial $x_0 = 0.3$}
+    \label{fig:mi_imagen_8}
+\end{figure}
+
+
+Por último, mostramos ejemplos de la estabilidad cuando el punto fijo no es hiperbólico y la derivada segunda en el punto fijo es nula.  
+
+\begin{ejemplo}
+
+Consideramos las  funciones escalares $f(x) = x - x^3$ y $g(x) = -x + x^3$, con derivadas $f'(x)= 1 - 3x^2$ y $g'(x) = -1 + 3x^2$, en $f$ el $0$ es un punto fijo estable mientras que en $g$ es inestable, ver  Figura~\ref{fig:mi_imagen_total1.8_100}. En ambos casos no es hiperbólico, también se puede estudiar la estabilidad a través de las segundas iteraciones, que en este caso son $ f^2(x) = x + 2x^3 - 3x^5 + 3x^7 +x^9$ y $g^2(x) =  x - 2x^3  -3x^5 + 3x^7 + x^9$. En ambos casos el coeficiente de mayor grado es positivo, por tanto,si tomamos un valor inicial lo suficientemente grande, las iteraciones tenderán a $\infty$. 
+\end{ejemplo}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig9.png}  % Reemplaza con el nombre de tu imagen
+        \label{fig:mi_imagen_9_1}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig10.png}  % Reemplaza con el nombre de tu imagen
+        \label{fig:mi_imagen_10_1}
+    \end{subfigure}
+    \caption{Diagramas de Cobweb a las funciones $f(x) = -x + x^3 $ y $f(x) = x - x^3 $ partiendo de $x_0 = 0.7$}
+    \label{fig:mi_imagen_total1.8_100}
+\end{figure}
+
+A continuación estudiamos un lema y un teorema que generaliza todos los ejemplos vistos anteriormente:
+
+\begin{lema}\label{lemasigno}
+Sea $f$ una función de clase $n+1$ con alguna derivada no nula, $x_0$ un punto de $f$ y sea $m \leq n+1$ el menor entero para el cual la derivada de $f$ es no nula, entonces existe un entorno de $x_0$ en el que las funciones
+$$
+f(x) - f(x_0) \quad \text{ y } \quad \frac{f^{(m)}(x_0)}{m!}(x - x_0)^m 
+$$
+tienen el mismo signo.
+\end{lema}
+
+\begin{proof}
+
+Considerando la expansión de Taylor de $f$ en el punto $x_0$
+\begin{align*}
+f(x) = f(x_0) + \frac{f^{(m)}(x_0)}{m!}(x - x_0)^m + \ldots 
++ \frac{f^{(n)}(x_0)}{n!}(x - x_0)^n 
++ R_{n+1,x_0}(x)
+\end{align*}
+%
+Donde $\frac{R_{n+1,x_0}(x)}{(x-x_0)^{n+1}} \to 0$ cuando $x \to x_0$. Equivalentemente
+\begin{align*}
+f(x) - f(x_0) = (x - x_0)^m \bigg( \frac{f^{(m)}(x_0)}{m!} + \ldots 
++ \frac{f^{(n)}(x_0)}{n!}(x - x_0)^{n-m} 
++ R_{n+1,x_0}(x) \bigg)
+\end{align*}
+%
+Como el límite de 
+$$
+\left( \frac{f^{(m)}(x_0)}{m!} +  \ldots 
++ \frac{f^{(n)}(x_0)}{n!}(x - x_0)^{n-m} +  R_{n+1,x_0}(x) \right)
+$$
+%
+cuando $x \to x_0$ es $\frac{f^{(m)}(x_0)}{m!}$ hay un entorno en el que la expresión anterior tiene el mismo signo que $\frac{f^{(m)}(x_0)}{m!}$, así que en dicho entorno $f(x) - f(x_0)$ tiene el mismo signo que $(x - x_0)^m \frac{f^{(m)}(x_0)}{m!}$
+
+\end{proof}
+
+Este teorema ha sido desarrollado por el autor con el fin de dar más claridad a los ejemplos mostrados anteriormente. En el, profundizamos en la caracterización de la dinámica de las funciones a partir de su linealizado pero antes debemos de definir unos conceptos.
+
+\begin{definicion}
+
+Diremos que un punto fijo $\hat{x}$ de $f$ es asintóticamente estable por la derecha (izquierda) cuando es estable y además $\exists r > 0$ de tal forma que si un $x_0 \in \mathbb{R}$ cumple que $x_0 - \hat{x} < r$ $( \hat{x} - x_0 < r)$ entonces $f^n(x_0) \rightarrow \hat{x}$ cuando $n \rightarrow \infty$.
+
+\end{definicion}    
+
+\begin{teorema}\label{Teorema1.3.2}
+Dada una función $f \in \mathcal{C}^3$ y un punto fijo $\hat{x} $ de $f$:
+
+\begin{itemize}
+    \item[1.] Si $f'(\hat{x}) = 1$, entonces tenemos tres casos a considerar:
+    \begin{itemize}
+        \item[(a)] Si $f''(\hat{x}) > 0$, entonces $\hat{x}$ es asintóticamente estable por la izquierda.
+        \item[(b)] Si $f''(\hat{x}) < 0$, entonces $\hat{x}$ es asintóticamente estable por la derecha. 
+        \item[(c)] Si $f''(\hat{x}) = 0$ pueden darse dos casos:
+            \begin{itemize}
+                \item[(c.1)] $f'''(\hat{x}) > 0$, entonces $\hat{x}$ es asintóticamente estable
+                \item[(c.2)] $f'''(\hat{x}) < 0$, entonces $\hat{x}$ es inestable.
+            \end{itemize}
+    \end{itemize}
+
+    \item[2.] Si $f'(\hat{x}) = -1$ y $3 f''(\hat{x})^2 - 2 f'''(\hat{x}) \neq 0$, entonces tenemos dos casos a considerar:
+    \begin{itemize}
+        \item[(a)] Si $f'''(\hat{x}) + \frac{3}{2} f''(\hat{x})^2  < 0$, entonces $\hat{x}$ es asintóticamente estable.
+        \item[(b)] Si $f'''(\hat{x})  + \frac{3}{2} f''(\hat{x})^2 > 0$, entonces $\hat{x}$ es inestable.
+    \end{itemize}
+\end{itemize}
+\end{teorema}
+
+\begin{proof}
+Supongamos sin perdida de generalidad que $\hat{x} = 0$.
+
+Comencemos probando $1.a)$, para ello comenzamos desarrollamos en serie de Taylor de $f'(x)$ de primer orden, como $f'(0) = 1$ y $f''(0) \neq 0$ tenemos:
+$$
+f(x) = f(0) + f'(0)x + \frac{f''(0)}{2!}x^2 +  R_{3,0} = x + f''(0)x^2  + R_{3,0}
+$$
+%
+Donde $R_{3,0} \to 0$. Razonando de forma similar al lema anterior obtenemos que  $f(x) - x$ y $f''(0)x^2$ tienen el mismo signo en un entorno $(-\mu,\mu)$.
+Cuando $f''(0) > 0$ existe un entorno en el que $f''(x) > 0$, considerando la intersección de dicho entorno con $(-\mu,\mu)$ y renonbrándolo como $(-\delta,\delta)$.
+
+Si $x_0 \in (-\delta,\delta)$ entonces $x_1 = f(x_0) > x_0$ y en general $x_{n+1} = f(x_n) > x_n$ hasta que $x_n$ se salga de $(-\delta,\delta)$. 
+
+Si $x_0 > 0$ entonces $x_n$ se sale del intervalo $(-\delta,\delta)$ cuando $n \to \infty$, por tanto cuando $x_0 > 0$ el $0$ no es estable.
+
+Si $x_0 < 0$ supongamos que $|\frac{f''(0)}{2!}x^2 + \frac{f^{(3)}(\xi)}{(3)!}x^{3} | < \frac{1}{2}$ para todo $x \in (-\delta,\delta)$ entonces $x_1 = f(x_0) = x_0 + \frac{f''(0)}{2!}x_{0}^2 + \frac{f^{(3)}(\xi)}{(3)!}x_{0}^{3} < x_0 - \frac{1}{2} x_0  =\frac{1}{2} x_0  < 0$, es decir, $x_0 < x_1 < 0$, por inducción llegamos a que $x_n < x_{n + 1} < 0$, por tanto,  $x_n \to 0$ cuando $n \to \infty$, es decir, cuando $x_0 < 0$ el $0$ es estable. Hemos demostrado que $0$ es asintoticamente estable por la derecha. Para demostrar $1.b)$ se sigue un razonamiento similar.
+
+$1.\,c.\,1) \text{ y } 1.\,c.\,2)$
+
+Cuando $f''(0) = 0$ desarrollamos en serie de Taylor de $|f'(x)|$ de primer orden, como $f'(0) = 1$  tenemos:
+\[
+\begin{split}
+|f'(x)| &= |f'(0)| + \frac{f'(0)}{|f'(0)|} f''(0)x  + \frac{1}{2} \frac{f'''(0) |f'(0)| - f'(0) f''(0)^2}{|f'(0)|^2} x^2  +   R_{3,0} \\& = 1 + \frac{f'''(0)x^2}{2} +  R_{3,0}
+\end{split}
+\]
+%
+Como $f'''(0) > 0$, existe un entorno de $0$ de longitud $2 \delta$ en el cual $f'''(x) > 0$. Por tanto cuando $x \in (- \delta, \delta)$ ocurre que $\frac{f'''(0)x^2}{2} > 0$, gracias al lema anterior deducimos que $|f'(x) - 1 |> 0$, por el Teorema $1$ concluimos que $0$ es inestable.
+
+
+Por otra parte, cuando $f'''(0) < 0$ existe un entorno de $0$ de longitud $2 \delta$ en el cual $f'''(x) < 0$. Por tanto si $x \in (-\delta,\delta)$ ocurre que $\frac{f'''(0)x^2}{2} < 0$, gracias al lema anterior deducimos que $|f'(x) - 1 < 0|$, por el Teorema $1$ concluimos que $0$ es asintoticamente estable. Cuando $f'''(0) = 0$ la estabilidad queda determinada por $f''''(0)$.
+
+$2.a) \text{ y } b)$
+
+Basta tomar $g = f \circ f = f^2$. Notar que si $0$ es un punto fijo de $f$, entonces también es un punto fijo de $g$. Usando la regla de la cadena:
+$$
+g'(x) = \frac{d}{dx} f(f(x)) = f'(f(x)) f'(x).
+$$
+%
+Esto implica que la estabilidad de un punto fijo de $f$ viene determinada por la estabilidad de $g$ ya que si $\dot{x}$ es un punto fijo de $f$:
+$$
+g'(\dot{x}) = f'(f(\dot{x})) f'(\dot{x}) = f^{2}(x)'(\dot{x}).
+$$
+%
+Además,
+$$
+g'(0) = \left[ f'(0) \right]^2 = 1
+$$
+%
+A continuación, calculamos $g''(0)$. Obtenemos:
+$$
+g''(x) = f'(f(x)) f''(x) + f''(f(x)) \left[ f'(x) \right]^2,
+$$
+$$
+g''(0) = f'(0) f''(0) + f''(0) \left[ f'(0) \right]^2 = 0 \quad (\text{ya que } f'(0) = -1).
+$$
+%
+Por último, $g'''(0)$ es de la forma:
+$$
+g'''(0) = -2 f'''(0) - 3 \left[ f''(0) \right]^2 =  \frac{f'''(x)}{f'(x)} - \frac{3}{2} \left[ \frac{f''(x)}{f'(x)} \right]^2.
+$$
+%
+Entonces cuando $\frac{f'''(x)}{f'(x)} - \frac{3}{2} \left[ \frac{f''(x)}{f'(x)} \right]^2 > 0$ se trata del caso $1.b)$ y cuando $\frac{f'''(x)}{f'(x)} - \frac{3}{2} \left[ \frac{f''(x)}{f'(x)} \right]^2 < 0$ se trata del caso $1.c)$
+\end{proof}
+ 
+
+\chapter{Bifurcaciones en Sistemas Discretos Unidimensionales}\label{chap:bifurcaciones}
+
+En este capítulo estudiaremos la dinámica de las perturbaciones  los sistemas dinámicos (discretos unidimensionales) monótonos. Comencemos viendo qué es una perturbación:
+
+Dada una función $F$, diremos que una perturbación del sistema dinámico asociado a $f$ es una función de la forma:
+$$
+F : \mathbb{R}^k \times \mathbb{R} \rightarrow \mathbb{R} \quad  \quad (\lambda,x) \rightarrow F(\lambda,x) \quad \text{t.q}  \quad F(0,x)=f(x)
+$$
+%
+Si la función $F :\mathbb{R}^k \times  K \subset \mathbb{R} \rightarrow \mathbb{R}$ donde $K$ es un compacto, es $\mathcal{C}^1$ entonces para valores pequeños de $\|\lambda\|$ el sistema dinámico de $F$ es monótono en $x$.
+
+Estudiaremos los puntos fijos de $x\to F(\lambda,x)$ para valores de $\lambda$ próximos a cero a partir de la linealización de $F$ en el punto fijo.
+
+Al ser un concepto muy amplio, vamos a centrarnos en el estudio de funciones que poseen ciertas propiedades; para definir dichas propiedades, introducimos los siguientes conceptos:
+
+\begin{definicion}
+Dada una función $f$ y una solución $\{x_0,x_1,x_2 , \ldots\} $ de $x_{n+1} = f(x_n)$ diremos que la solución es monótona creciente cuando $x_n \leq x_{n+1}$ $\forall n \in \mathbb{N}$ y decreciente cuando $x_n \geq x_{n+1}$ $\forall n \in \mathbb{N}$, diremos que es monótona cuando sea monótona creciente o decreciente. Para terminar, diremos que el sistema dinámico asociado a una función es monótono cuando toda órbita sea monótona. 
+\end{definicion}
+
+\begin{lema}
+
+Sea $f$ una función $\mathcal{C}^1$, si $f'(x) \geq 0$ $\forall x \in \mathbb{R}$ entonces el sistema dinámico asociado a $f$ es monótono.
+    
+\end{lema}
+
+\begin{proof}
+
+Por el teorema del valor medio tenemos que para todo $n \in \mathbb{N}$ ocurre que $x_{n+1} - x_n = f(x_n) - f(x_{n-1}) = f'(\hat{x}) (x_{n} - x_{n-1})$, donde $\hat{x} \in (x_{n}, x_{n-1})$
+, aplicando este proceso $n$ veces y teniendo en cuenta que por hipótesis $f'(x) \geq 0$ $\forall x \in \mathbb{R}$, tenemos que $x_{n+1} - x_{n}$ tiene el mismo signo que $x_{1} - x_{0}$ $\forall n \in \mathbb{N}$. Y por tanto si $x_1 \leq x_0$ entonces $x_{n+1} \leq x_n$ para todo $n$, en cambio, si $x_1 \geq x_0$ ocurre lo contrario, $x_{n+1} \geq x_n$ , como esto ocurre para cualquier valor inicial $x_0$ concluimos que el sistema dinámico asociado a $f$ es monótono.
+
+\end{proof}
+
+Si $f'(x) > 0$ $\forall x \in \mathbb{R}$ entonces $f$ es inyectiva ya que si no lo fuese existen $x$ e $y$ tal que $f(x) = f(y)$ y por el TVM tenemos que $0 = f(x) - f(y) = f'(c) (x - y)$ con $c \in (x,y)$, como $x \neq y$ debe ocurrir que $f'(c) \neq 0$, llegando a contradicción.
+Al ser $f$ inyectiva existe $f^{-1}$ definida sobre la imagen de $f$. Denotaremos como $f^{-n}$ a la composición de $f^{-1}$ $n$ veces.
+
+Comenzamos analizando el comportamiento de las bifurcaciones cerca de puntos fijos de funciones con sistemas dinámicos monótonos
+
+\section{Puntos fijos hiperbólicos}
+
+A continuación estudiamos los puntos fijos de una perturbación de la función $f$ bajo ciertas hipótesis:
+
+\begin{proposicion}
+    
+Supongamos que $f \in \mathcal{C}^1$ tiene un sistema dinámico monótono, $f(0)=0$ y $f'(0) \neq 1$. Consideramos la perturbación $\mathcal{C}^1$ $F(\lambda,x)$.
+Entonces existe un entorno de $x = 0$ en el que para valores pequeños de $\mathbf{\lambda}$ $F(\lambda,x)$ tiene un único punto fijo con la misma estabilidad que la del punto fijo $0$ de $f$.
+
+\end{proposicion}
+
+\begin{proof}
+
+Definimos la función \( G(\lambda, x) = F(\lambda, x) - x \). Un punto fijo de \( F(\lambda, x) \) es entonces un valor \( x \) tal que \( G(\lambda, x) = 0 \). Por lo tanto, queremos encontrar \( x = \psi(\lambda) \) tal que:
+\[
+G(\lambda, \psi(\lambda)) = 0.
+\]
+Notemos que \( G(0, x) = F(0, x) - x = f(x) - x \). Como \( f(0) = 0 \), tenemos que \( G(0, 0) = f(0) - 0 = 0 \). Entonces, \( (0, 0) \) es un punto donde \( G(\lambda, x) = 0 \).
+
+Para aplicar el Teorema de la Función Implícita, necesitamos que la derivada parcial de \( G \) con respecto a \( x \) en el punto \( (0, 0) \) sea diferente de cero. Calculamos esta derivada parcial:
+\[
+\frac{\partial G}{\partial x} (0, 0) = \frac{\partial}{\partial x} \left( F(0, x) - x \right)(0)  = f'(0) - 1.
+\]
+Dado que \( f'(0) \neq 1 \), tenemos que \( \frac{\partial G}{\partial x} (0, 0) \neq 0 \). Por lo tanto, el Teorema de la Función Implícita garantiza que existe una función \( \mathcal{C}^1 \), \( x = \psi(\lambda) \), definida para valores pequeños de \( \lambda \), tal que \( G(\lambda, \psi(\lambda)) = 0 \). Entonces \( F(\lambda, \psi(\lambda)) = \psi(\lambda) \), es decir, \( \psi(\lambda) \) es el punto fijo deseado para \( F \) cuando \( \lambda \) es pequeño.
+
+Para analizar la estabilidad de \( \psi(\lambda) \) como punto fijo de \( F \), observamos el comportamiento de la derivada de \( F \) con respecto a \( x \) en el punto \( (\lambda, \psi(\lambda)) \):
+\[
+\frac{\partial F}{\partial x} (\lambda, \psi(\lambda)).
+\]
+Evaluando esta expresión en \( \lambda = 0 \), obtenemos \( \frac{\partial F}{\partial x}(0, 0) = f'(0) = 1 \). Dado que la estabilidad de un punto fijo está determinada por la derivada en ese punto, concluimos que en un entorno de $(0,\psi(0))$ la estabilidad del punto fijo \( \psi(\lambda) \) de \( F(\lambda, x) \) es la misma que la estabilidad del punto fijo \( 0 \) de \( f(x) \), ya que ambos dependen de \( f'(0) \).
+
+\end{proof}
+
+\begin{ejemplo}
+
+Consideremos la función lineal $f(x) = 0.5x$ y su perturbación por un parámetro $\lambda$, $F(\lambda,x) = \lambda + 0.5x$ Para cada valor del parámetro $\lambda$ existe un único punto fijo hiperbólico que tiene la misma estabilidad que la del punto fijo $0$ de $f$.
+
+\end{ejemplo}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig45.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $F(\lambda,x) = \lambda + 0.5x $ cuando $\lambda < 0$}
+        \label{fig:mi_imagen_9_2}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig46.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $F(\lambda,x) = \lambda + 0.5x $ cuando $\lambda > 0$}
+        \label{fig:mi_imagen_10_2}
+    \end{subfigure}
+    \caption{}
+    \label{fig:mi_imagen_total1.8_2}
+\end{figure}
+
+\section[Puntos fijos degenerados de una función cuadrática]{Puntos fijos degenerados de una función \\ cuadrática}
+
+A continuación estudiamos los puntos fijos de perturbaciones $F \in \mathcal{C}^2$  de una función $f \in \mathcal{C}^2$ tal que $f'(x) > 0$ para todo $x \in \mathbb{R}$, $f(0)=0$, $f'(0) =1$ y $f''(0) \neq 0$.
+Comenzamos definiendo
+$$
+H(\lambda, x) := \frac{\partial (F(\lambda, x) - x)}{\partial x}
+$$
+%
+Entonces: 
+\[
+H(0, 0) = 0 \quad \text{y} \quad \frac{\partial H}{\partial x}(0, 0) = f''(0) \neq 0.
+\]
+Como $f''(0)$ es no nulo en un entorno del $(0,0)$, $H(\lambda, x)$ tendrá un punto extremo en dicho entorno, denotemoslo $\psi(\lambda)$, demostremos la existencia de dicho punto.
+\newline
+El Teorema de la Función Implícita implica que existen constantes \( \delta > 0 \), \( \eta > 0 \), y una función \( \mathcal{C}^1 \), \( \psi(\lambda) \), definida para \( \|\lambda\| < \delta \) tal que \( \psi(0) = 0 \) y \( H(\lambda, \psi(\lambda)) = 0 \)
+y, además, toda solución \( (\lambda, x) \) de $H(\lambda, \psi(\lambda)) = 0$ con \( \|\lambda\| < \delta \) y \( |x| < \eta \) está dada por \( x = \psi(\lambda) \).
+
+\begin{proposicion}\label{Prop3}
+
+Considerando una función $f$ y una perturbación $F$ en las condiciones anteriores y denotando $\alpha(\lambda) = F(\lambda,\psi(\lambda)) - \psi(\lambda)$, se cumple:
+
+\begin{enumerate} 
+
+\item Si $\alpha(\lambda) \cdot f''(0) < 0 $ $\Rightarrow  F$ tiene dos puntos fijos para valores pequeños de $\|\lambda\|$.
+
+\item Si $\alpha(\lambda) \cdot f''(0) = 0 $ $\Rightarrow  F$ tiene un punto fijo para valores pequeños de $\|\lambda\|$.
+
+\item Si $\alpha(\lambda) \cdot f''(0) > 0 $ $\Rightarrow  F$ no tiene puntos fijos para valores pequeños de $\|\lambda\|$.
+
+\end{enumerate}
+\end{proposicion}
+
+\begin{proof}
+
+El estudio de los puntos fijos de $F(\lambda,x)$ es equivalente al estudio de los ceros de la ecuación $F(\lambda,x) - x = 0$.
+
+Debemos de tener en cuenta que $f''(0) \neq 0$, por tanto podemos suponer que en un entorno de $0$ la segunda derivada de la función $F(\lambda,x)$ es no nula, esto implica que en dicho entrono la función $F(\lambda,x)$ tenga como mucho dos ceros, ya que si tuviese más, la segunda derivada de $F(\lambda,x)$ tendría algún cero, se prueba aplicando el teorema de Rolle iterativamente sobre $F(\lambda,x)$. Por otra parte hemos demostrado que $F(\lambda,x)$ tiene un punto extremo, haciendo una expansión de Taylor de $F(\lambda,x)$ sobre $x$ podemos observar que dicho punto extremo está determinado por el signo del coeficiente de $x^2$, que cuando $\lambda = 0$, toma el valor $f''(0)$, entonces en un entorno de $(0,x)$ el signo de $F(\lambda,x)$ no cambia.  
+
+En resumen, para cada valor pequeño de $\lambda$ la función $x \to F(\lambda,x) - x$ tiene un mínimo en $x = \psi(\lambda)$ cuando $f''(0) > 0$ o máximo cuando $f''(0) < 0$.
+
+Ahora bien, el número de ceros que tiene la función $F(\lambda,x) - x$ viene determinado por el valor de $\alpha(\lambda) = F(\lambda,\psi(\lambda)) - \psi(\lambda)$ y $f''(0)$.
+
+Ya que $(f(x)-x)''$ tiene el mismo signo en un entorno $(-\delta,\delta)$. Entonces para valores de $\lambda$ pequeños y $x \in (-\delta,\delta)$, $(F(\lambda,x) - x)''$ tiene el mismo signo que $(f(x)-x)''$. Por otro lado, si $x$ y $\lambda$ son pequeños, la derivada segunda es no nula, entonces $F(\lambda,x) - x$ tiene a lo sumo dos ceros. Para ver el número exacto,basta estudiar la relación entre $\alpha(\lambda)$ y $f''(0)$.
+
+Si $\alpha(\lambda)$ es un mínimo ($f''(0) > 0$) y negativo ($\alpha(\lambda) < 0$) o un máximo ($f''(0) < 0$) y positivo  ($\alpha(\lambda) > 0$) al tratarse de una función con forma parabólica la función cortará al eje de las $x$ en dos puntos, es decir, la función $F(\lambda,x) - x$ tiene dos ceros, esto se resume con la condición $f''(0)\alpha(\lambda) < 0$. 
+
+Profundicemos este caso y estudiemos ciertas características de estos dos ceros, que denotaremos por $x^1_\lambda$ y $x^2_\lambda$.
+
+Signo: Veamos que ambos ceros tienen signos distintos, esto es equivalente a decir que $x^1_\lambda x^2_\lambda < 0$.
+
+Como en un entorno de $\lambda$ $F(\lambda,x) -x$ se comporta como una función cuadrática con dos ceros, el discriminante debe de ser positivo, por tanto si $a(\lambda)$, $b(\lambda)$ y $c(\lambda)$ denotan los coeficientes asociados a la función cuadrática tenemos que $b(\lambda) = 0$ en un entorno de $\lambda = 0$ ya que $\frac{\partial (F(\lambda, x) - x)}{\partial x} = 0$ con $\lambda$ y $x$ pequeños. Por tanto el discriminante es de la forma $ - 4a(\lambda)c(\lambda) $, que es positivo pues la función tiene dos raíces, esto implica que $x^1_\lambda x^2_\lambda = \frac{c(\lambda)}{a(\lambda)} < 0$. Por tanto los ceros de $F(\lambda,x)-x$ tienen signo distinto para valores de $\lambda$ cercanos a $0$.
+
+Estabilidad: Como  para valores de $\lambda$ y $x$ pequeños $(F(\lambda,x) - x)''$ tiene el mismo signo que $(f(x)-x)''$ no cambia de signo en un entorno de $0$ si $f''(0) > 0$ entonces $(F(\lambda,x) - x)'' > 0$ y suponiendo que ambos ceros se encuentran dentro del entorno de $0$ podemos suponer que $F''(\lambda,x^1_\lambda) > 1$ y $F''(\lambda,x^2_\lambda) > 1$, es decir, ambos puntos son inestables, en cambio si $f''(0) < 0$ entonces $(F(\lambda,x) - x)'' < 0$ y por tanto $F''(\lambda,x^1_\lambda) < 1$ y $F''(\lambda,x^2_\lambda) < 1$, suponiendo que $F''(\lambda,x^1_\lambda) > -1$ y $F''(\lambda,x^2_\lambda) > -1$ concluimos que ambos puntos son estables.
+
+Si $\alpha(\lambda) = 0$ entonces la parábola tiene un cero de multiplicidad $2$ y si el punto extremo es un mínimo positivo o un máximo negativo, es decir, $f''(0)\alpha(\lambda) > 0$ entonces la función no tiene ningún cero.
+\newline
+A continuación mostramos la función $F(\lambda,x) - x$ en función del signo de $f''(0)\alpha(\lambda)$ y la posición con respecto del eje $x$ en función del valor de $\alpha(\lambda)$.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig47.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Estudio de los ceros de $f$ cuando $f'''(0) > 0$ para distintos valores de $\alpha(\lambda)$}
+        \label{fig:mi_imagen_9_3}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig48.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Estudio de los ceros de $f$ cuando $f'''(0) < 0$ para distintos valores de $\alpha(\lambda)$}
+        \label{fig:mi_imagen_10_3}
+    \end{subfigure}
+    \caption{}
+    \label{fig:mi_imagen_total1.8_3}
+\end{figure}
+
+
+
+\end{proof}
+
+\begin{ejemplo}
+
+Consideremos la función cuadrática $f(x) = x + x^2$, como $f'(0) = 1> 0$ y $f \in \mathcal{C}^1$ existe un entorno de $0$ en el que la función tiene un sistema dinámico monótono, consideramos la función perturbada por un parámetro $\lambda$, $F(\lambda,x) = \lambda + x + x^2$ en este caso tenemos que $\alpha(\lambda) = \frac{\lambda}{2}$ y $f''(0) = 2$, en consecuencia si $\lambda < 0 $ $F$ tiene dos punto fijos, si $\lambda = 0$ $F$ tiene un puntos fijos y si $\lambda > 0$ $F$ no tiene ningún punto fijo.
+    
+\end{ejemplo}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.25\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig42.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Las funciones $F$ y $f(x)= x$ cuando $\lambda < 0$}
+        \label{fig:mi_imagen_11_1}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.25\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig43.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Las funciones $F$ y $f(x)= x$ cuando $\lambda = 0$}
+        \label{fig:mi_imagen_12_1}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.25\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig44.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Las funciones $F$ y $f(x)= x$ cuando $\lambda > 0$}
+        \label{fig:mi_imagen_13_1}
+    \end{subfigure}
+    \caption{Descripción general de las funciones $F$ y $f(x) = x$ para distintos valores de $\lambda$.}
+    \label{fig:mi_imagen_total1.3_1}
+\end{figure}
+
+
+\section{Bifurcaciones de doble periodo}
+
+En la sección anterior hemos visto que cuando $f'(x) > 0$ podemos caracterizar las perturbaciones bajo ciertas condiciones. En este capítulo nos dedicaremos a explorar la estabilidad de las perturbaciones cuando $f'(x) < 0$ y como esto afecta al carácter monótono del sistema dinámico de la función. 
+
+Comenzamos viendo que ocurre cuando $f'(x_0) < 0$ para un punto fijo y como esto condiciona la dinámica de la función.
+
+\begin{lema}
+    
+Consideremos una función \( f \in \mathcal{C}^1 \) y un punto $x_0$ tal que \( f'(x_0) < 0 \), entonces el sistema dinámico de $f$ no es monótono en $x_0$.
+
+\end{lema}
+
+\begin{proof}
+ Denotemos $x_n = f^n(x_0)$, tomando $x_1 = f(x_0)$ supongamos que $x_0 < x_1$,  por el teorema del valor medio sabemos que $x_{2} - x_1 = f(x_1) - f(x_{0}) = f'(\hat{x}) \cdot (x_{1} - x_{0}) < 0$ para algún $\hat{x} \in (x_{1}, x_{0})$, es decir, $x_0 < x_1$ pero $x_{2} < x_1 $, por tanto $f$ no tiene asociado un sistema dinámico monótono. 
+ El caso $x_0 > x_1$ se resuelve de manera similar.
+\end{proof}
+
+En resumen, podemos deducir que si existe una función \( f \) tal que \( f'(\hat{x}) < 0 \) en algún punto \( \hat{x} \), entonces la función \( f \) tiende a llevar puntos cercanos a \( \hat{x} \) hacia el otro lado de \( \hat{x} \), mostrando un comportamiento que contradice la monotonía estricta.
+
+Al no existir ninguna relación entre $x_n$ y $x_{n+m}$ las órbitas de funciones con sistemas dinámicos no monótonos son mas complejas, por ello nos centraremos en órbitas no monótonas que cumplen ciertas características, supongamos que la órbita de $x_0$ está acotada, al tratarse de un conjunto infinito numerable acotado existe un punto de acumulación, $\hat{x}$ y supongamos que los términos pares de la órbita convergen a dicho punto, por tanto, los términos impares de la órbita convergen a $f(\hat{x})$. Esto motiva la siguiente definición:
+
+\begin{definicion}
+
+Dado un punto $x_0$ y una función $f$ diremos que $x_0$ es un punto periódico de periodo mínimo $n \in \mathbb{N}$  si $n$ es el menor entero que hace que $f^n(x_0) = x_0$. El conjunto de todas las iteraciones de un punto periódico es denominado órbita periódica.
+
+\end{definicion}
+
+Un punto periódico (de $f$) $x_0$ de período mínimo $n$ es un punto fijo de la función $f^n$. Por tanto, podemos aplicar el Teorema 1.1 a $f^n$ para estudiar la estabilidad de $x_0$.
+
+\begin{definicion}
+
+Diremos que un punto periódico de periodo mínimo $n$ es estable, inestable o asintóticamente estable cuando sea un punto fijo estable, inestable o asintóticamente estable de $f^n$.
+    
+\end{definicion}
+
+A continuación nos centramos en un caso particular de $f'(x) < 0$, el caso hiperbólico, es decir, cuando $f'(x) = -1$.
+
+Para aligerar la notación, denotaremos a cualquier perturbación de la siguiente forma: \( F(\lambda,x) = F_{\lambda}(x) \) y la composición de $f$ consigo misma será: $ g = f \circ f $.
+
+Diremos que una función \( f(x) \) cumple las hipótesis \( H_1 \) cuando: 
+\begin{enumerate}
+    \item  \( f(0) = 0 \) y \( f'(0) = -1 \),
+    \item  \( g'''(0) \neq 0 \).
+\end{enumerate}
+
+Y dada una perturbación de un parámetro \( F_{\lambda}(x) \) de \( f(x) \), diremos que cumple las hipótesis \( H_2 \) cuando para todo $\lambda \in \mathbb{R}$:
+\begin{enumerate}[start = 3]
+    \item  \( F_{\lambda}(0) = 0 \).
+    \item  \( \frac{dF_{\lambda}(0)}{dx} = -(1 + \lambda) \).
+\end{enumerate}
+
+
+\begin{teorema}
+Sea \( f(x) \in \mathcal{C}^3 \) una función con un punto fijo en \( 0 \) que cumple las hipótesis \( H_1 \) y dada una perturbación \( F_{\lambda}(x) \) de \( f(x) \) que cumple las hipótesis \( H_2 \). Entonces existe un entorno de \( (\lambda,x) = (0,0) \) en el cual la existencia de órbitas 2-periódicas viene determinada por \( g'''(0) \) y \( \lambda \) de la siguiente forma:
+
+\begin{enumerate}
+    \item  Para los valores de $\lambda$ tales que \( \lambda g'''(0) < 0 \) existe una única órbita periódica \( \{\hat{x}_\lambda, F_{\lambda}(\hat{x}_\lambda) \} \) de periodo mínimo 2 de la función \( F_{\lambda}(x) \). Además, las órbitas 2-periódicas son asintóticamente estables (inestables) si \( 0 \) es un punto fijo inestable (asintóticamente estable) para ese valor de \( \lambda \).
+
+    \item Cuando \( \lambda g'''(0) > 0 \), no existen órbitas periódicas de periodo mínimo \( 2 \). 
+\end{enumerate}
+
+\end{teorema}
+
+\begin{proof}
+Los puntos de periodo \( 2 \) de \( F_{\lambda}(x) \) se corresponden con los puntos fijos de \( F^2_{\lambda} = F_{\lambda} \circ F_{\lambda} \) (que denotaremos por \( G_{\lambda}(x) \)), es decir, a los ceros de la función \( G_{\lambda}(x) - x \).
+
+Por la condición 3 de \( H_2 \) se cumple que \( F_{\lambda}(0) = 0 \) y \( G_{\lambda}(0) = F_{\lambda}(F_{\lambda}(0)) = 0 \), entonces \( 0 \) es solución de \( G_{\lambda}(x) - x \).
+
+Como $0$ es un cero de $G_\lambda(x)-x$ , pero tiene un periodo mínimo de $1$ como punto fijo de $F_\lambda$ , vamos a descartar esa solución considerando la nueva función:
+\[
+T_{\lambda}(x) = \frac{1}{x} \cdot [ G_{\lambda}(x) - x ],
+\]
+que en un entorno del origen solo tiene como ceros a puntos fijos de periodo mínimo \( 2 \). 
+
+Vamos a analizar los ceros de dicha función. Para ello comenzamos desarrollando la función en serie de Taylor:
+\[
+G'_{\lambda}(x) = F'_{\lambda}(F_{\lambda}(x)) F'_{\lambda}(x)
+\]
+\[
+G''_{\lambda}(x) = F''_{\lambda}(F_{\lambda}(x)) F'_{\lambda}(x)^2 + F'_{\lambda}(F_{\lambda}(x)) F''_{\lambda}(x)
+\]
+\[
+G'''_{\lambda}(x) = F'''_{\lambda}(F_{\lambda}(x)) F'_{\lambda}(x)^3 + 3 F''_{\lambda}(F_{\lambda}(x)) F'_{\lambda}(x) F''_{\lambda}(x) + F'_{\lambda}(F_{\lambda}(x)) F'''_{\lambda}(x)
+\]
+
+Por tanto, por la expansión de Taylor de \( G_{\lambda}(x) \) cerca del origen es:
+\[
+G_{\lambda}(x) = (1 + \lambda)^2 x + \frac{a(\lambda)}{2} x^2 + \frac{b(\lambda)}{6} x^3 + \frac{G''''_{ \lambda}(\xi)}{24} x^4
+\]
+
+
+donde \( a(\lambda) \) y \( b(\lambda) \) cumplen \( a(0) = 0 \) y \( b(0) = g'''(0) \). 
+
+En particular, en el origen tenemos:
+\[
+G'_0(0) = g'(0) = 1 \quad , \quad G''_0(0) = g''(0) = 0 \quad 
+\]
+Además $G'''_0(0)$  tiene el mismo signo que $ g'''(0) = b(0)$ cuando $\lambda$ toma valores pequeños, basta aplicar el Lema~\ref{lemasigno} a la función $G'''_\lambda(x)$ para valores pequeños de $\lambda$.
+La expansión de Taylor que hemos estado buscando es:
+\[
+T_{\lambda}(x) = \lambda (2 + \lambda) + \frac{a(\lambda)}{2} x + \frac{b(\lambda)}{6} x^2 + \frac{T'''_{ \lambda}(\xi)}{24} x^3
+\]
+
+Dado que \( b(0) \neq 0 \), el estudio de los ceros de la función se puede abordar de manera análoga a lo hecho en la Proposición~\ref{Prop3}, considerando que en este caso se tiene \( \alpha(\lambda) = \lambda \) y \( T''_0(0) = g'''(0) \).  
+
+En consecuencia:
+\begin{itemize}
+    \item Si \( \lambda g'''(0) > 0 \), la ecuación no tiene soluciones reales, es decir, no existen ceros.
+    \item En cambio, si \( \lambda g'''(0) < 0 \), la ecuación admite dos soluciones reales que corresponden a una única órbita 2-periódica del tipo \( \{ \hat{x}_{\lambda}, F_{\lambda}(\hat{x}_{\lambda}) \} \).
+\end{itemize}
+
+Para analizar la estabilidad de esta órbita periódica, se puede razonar de forma análoga a la demostración de la proposición anterior. Recordando que la pendiente de \( G_{\lambda}(x) \) en \( 0 \) es \( (1 + \lambda)^2 \), se obtienen dos escenarios:
+
+\begin{itemize}
+    \item Si \( (1 + \lambda)^2 < 1 \) (es decir, \( \lambda < 0 \)), entonces el punto fijo \( 0 \) es estable. En este caso, la pendiente de \( G_{\lambda}(x) - x \) en los puntos \( \hat{x}_{\lambda} \) y \( F_{\lambda}(\hat{x}_{\lambda}) \) es positiva, lo cual implica que ambos puntos fijos asociados a la órbita 2-periódica son inestables.
+    \item Por otro lado, si \( (1 + \lambda)^2 > 1 \) (es decir, \( \lambda > 0 \)), el punto fijo \( 0 \) se vuelve inestable, y la órbita de periodo 2 resulta ser estable.
+\end{itemize}
+
+
+
+    \begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig57.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Representación de $T_{\lambda}(x)$ en el caso particular $T_{\lambda}(x) = x^2 - 1$}
+        \label{fig:mi_imagen_9_4}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig58.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Representación de $G_{\lambda}(x)$ en el caso particular $G_{\lambda}(x) = x^3$ junto a la función $f(x) = x$, los puntos de corte de $f$ con $G_{\lambda}(x)$ representan los puntos fijos de $G_{\lambda}(x)$}
+        \label{fig:mi_imagen_10_4}
+    \end{subfigure}
+    \caption{}
+    \label{fig:mi_imagen_total1.10}
+    \end{figure}
+
+\end{proof}
+
+\begin{ejemplo}\label{Ejemplo2.3.1}
+Consideremos la función $f(x) = -x -3x^2$ y estudiemos la perturbación 1-paramétrica dada por $F(\lambda,x) = -(1 + \lambda)x - (3 + \lambda)x^2$.  
+Comprobemos que se satisfacen el resto de condiciones del Teorema anterior: $f(0) = 0$, $f'(0) = -1$, $g'''(0) = -108 \neq 0$, $F(0,x) = -x -3x^2$, $F(\lambda,0) = 0$ y $\frac{dF(\lambda,0)}{dx} = -(1 + \lambda)$. Por tanto, para cada valor pequeño de $\lambda$ existe una única órbita periódica de periodo mínimo $2$ que es asintóticamente estable.
+
+\end{ejemplo}
+
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.25\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig11.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb sobre $F(\lambda,x) = -(1 + \lambda)x - (3 + \lambda)x^2$ con $\lambda < 0$}
+        \label{fig:mi_imagen_11}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.25\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig12.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb sobre $F(\lambda,x) = -(1 + \lambda)x - (3 + \lambda)x^2$ con $\lambda = 0$}
+        \label{fig:mi_imagen_12}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.25\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig13.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb sobre $F(\lambda,x) = -(1 + \lambda)x - (3 + \lambda)x^2$ con $\lambda > 0$}
+        \label{fig:mi_imagen_13}
+    \end{subfigure}
+    \caption{}
+    \label{fig:mi_imagen_total1.3}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig16.png}  % Reemplaza con el nombre de tu imagen
+        \caption{$\lambda < 0$}
+        \label{fig:mi_imagen_14}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig15.png}  
+        \caption{$\lambda = 0$}
+        \label{fig:mi_imagen_15}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig14.png}       
+        \caption{$\lambda > 0$}
+        \label{fig:mi_imagen_16}
+    \end{subfigure}
+    \caption{Misma representación gráfica que en la secuencia anterior pero para $F^2$}
+    \label{fig:mi_imagen_total1.4}
+\end{figure}
+
+
+\newpage
+
+Añadimos un par de anotaciones sobre el teorema anterior:
+
+\begin{enumerate}
+\item No se pierde generalidad al suponer que en un entorno de $\lambda$ el punto fijo de $F(\lambda,x)$ es el $0$, si el punto fijo fuese $x_0 \neq 0$ bastaría tomar $G(\lambda, x) = F(\lambda, x + x_0) - x_0$, es inmediato comprobar que para $G(\lambda,x)$ se cumplen el resto de hipótesis del enunciado.
+
+\item El Teorema se puede utilizar para establecer bifurcaciones de doble periodo para puntos periódicos de cualquier periodo, no solo de puntos fijos, basta considerar una iteración apropiada de la función. Sin embargo, si el periodo es grande, el calculo de derivadas es bastante complejo.
+
+\end{enumerate}
+
+En resumen, en estas dos últimas secciones comenzamos estudiando la estabilidad de las funciones escalares en sus puntos fijos, dicha estabilidad está fuertemente relacionada con el valor de la derivada en dicho punto. Posteriormente pasamos al estudio de la estabilidad de perturbaciones, al ser un campo muy amplio lo dividimos en función del carácter monótono del sistema dinámico asociado a la función y en ambos subgrupos tratamos casos particulares determinados por condiciones sobre la función original y la perturbación. 
+
+
+\chapter{Dulce Introducción al Caos}\label{chap:caos}
+
+\begin{quote}
+\centering
+“El caos es solo un orden que aún no entendemos”. \textit{José Saramago}
+\end{quote}
+
+En este capítulo introducimos el concepto de caos y alguna de sus propiedades para a continuación estudiar la presencia de caos en la ecuación logística cuando $\lambda > 4$. Además introduciremos algunos conceptos como la dinámica simbólica y la función de desplazamiento.
+
+\section{Conceptos básicos}
+
+En esta sección introducimos el concepto de caos y ciertos resultados que nos ayuden a su estudio.
+
+
+Recordemos que un subconjunto $ U \subset W \subset \mathbb{R}$ con la topología usual se dice denso en $ W $ si para todo $\varepsilon > 0$ y para todo $w \in W$ existe un $u \in U$ tal que $|u - v| < \varepsilon$.
+
+\medskip
+
+\begin{definicion}
+
+Decimos que el sistema dinámico discreto asociado a una función $ f : [\alpha, \beta] \mapsto [\alpha, \beta]$ es caótico si:
+
+\begin{enumerate}
+    \item Los puntos periódicos de $ f $ son densos en $ [\alpha, \beta] $.
+    \item $ f $ es transitiva en $ [\alpha, \beta] $; es decir, dado cualquier par de subintervalos $ U_1 $ y $ U_2 $ en $ [\alpha, \beta] $, existe un punto $ x_0 \in U_1 $ y un $ n > 0 $ tal que $ f^n(x_0) \in U_2 $.
+    \item $ f $ tiene dependencia sensible en $  [\alpha, \beta] $; es decir, existe una constante de sensibilidad $ \tau $ tal que, para cualquier $ x_0 \in [\alpha, \beta] $ y cualquier entorno de $ x_0 $, $ U $, existe algún $ y_0 \in U $ y $ n > 0 $ tal que:
+    \[
+    |f^n(x_0) - f^n(y_0)| > \tau.
+    \]
+\end{enumerate}
+
+\end{definicion}
+
+Veamos que la transitividad es equivalente a la existencia de una órbita densa. 
+
+\begin{proposicion}\label{Prop3.1}
+La función continua $f$ tiene una órbita densa si y solo si es transitiva.
+\end{proposicion}
+
+\begin{proof}
+Sea $U_1, U_2 \subset [\alpha,\beta]$, como existe $x_0 \in [\alpha,\beta]$ en el cual
+\newline
+$\gamma(x_0) = \{x_0, f(x_0), f^2(x_0), \dots\} = \{x_0, x_1, x_2, \dots\}$
+es densa en $[\alpha,\beta]$, entonces existen $n, m \in \mathbb{N}$ tales que  
+\[
+x_n := f^n(x_0) \in U_1 \quad \text{y} \quad x_m := f^m(x_0) \in U_2.
+\]  
+Sin pérdida de generalidad, asumamos que $n > m$.  
+Dado que $x_n = f^{n-m}(x_m)$, se tiene que  
+\[
+f^{n-m}(x_m) \in U_1
+\]  
+Por lo tanto, $f$ es transitiva.
+
+Por otra parte, si $f$ es transitiva, consideremos la familia de intervalos 
+\newline
+$\{(q_1,q_2) \colon q_1,q_2 \in \mathbb{Q} \textbf{ y } \alpha \leq q_1 \leq q_2 \leq \beta \}$. La familia anterior forma una base de entornos numerables de $[\alpha,\beta]$, denotemoslos por $\{ Q_i\}_{i \in I}$, donde $I$ es un conjunto de índices que indexa a la familia anterior. Consideremos ahora el conjunto $T_i \subset [\alpha,\beta]$ que representa el subconjunto de elementos $x_i \in [\alpha,\beta]$ para los que existe un $n \in \mathbb{N}$ donde $f^n(x_i) \in Q_i$. Los conjuntos $T_i$ son abiertos y densos, veamoslo:
+
+\begin{itemize}
+    \item Abierto: Dado un punto $t_i \in T_i$ veamos que existe un entorno de $t_i$, $V_{t_i}$ tal que $V_{t_i} \subset T_i$. Como $f$ es continua si $f^j(t_i) \in Q_i$ para algún $j \in \mathbb{N}$ entonces por continuidad de $f^j$ existe un intervalo $S$ que contiene a $f^j(t_i)$ tal que $f^j(S) \subset Q_i$, por tanto $S \subset T_i$. 
+
+
+    \item Denso: Si existe un $i \in \mathbb{N}$ tal que $T_i$ no es denso entonces existe un intervalo abierto $S$ tal que $S \cap T_i = \emptyset$, es decir, todos los elementos de $S$ no pasan por $Q_i$ bajo ninguna iteración de $f$, es decir, $f^j(S) \cap Q_i = \emptyset$, esto significa que $\forall x \in S \text{ y } \forall j \in \mathbb{N} \text{ ocurre que } f^j(x) \notin Q_i$, lo que contradice la transitividad de $f$
+\end{itemize}
+
+Evidentemente por la transitividad de $f$ los conjuntos $T_i$ son no nulos, por tanto gracias al teorema de categorías de Baire~\cite{ref3} tenemos que la intersección $\cap_{i \in I}Q_i$ es un no vacío, por tanto existe algún elemento cuya órbita pasa por todos los $Q_i$, al ser $Q_i$ una base de entornos dicha órbita es densa.
+
+\end{proof}
+
+Ahora pasamos a estudiar un ejemplo clásico de función unidimensional con un sistema dinámico discreto caótico, la transformación diádica.
+
+\begin{ejemplo}
+ 
+Definimos la función discontinua $ D: [0, 1] \to [0, 1] $ como $ D(x) = 2x \mod 1 $. Es decir,
+\[
+D(x) =
+\begin{cases}
+2x & \text{si } 0 \leq x < 1/2, \\
+2x - 1 & \text{si } 1/2 \leq x < 1.
+\end{cases}
+\]
+%
+Estudiemos las funciones $D^n(x)$:
+\[
+D^2(x) = 
+\begin{cases} 
+4x & \text{si } 0 \leq x < \frac{1}{4}, \\
+4x - 1 & \text{si } \frac{1}{4} \leq x < \frac{1}{2}, \\
+4x - 2 & \text{si } \frac{1}{2} \leq x < \frac{3}{4}, \\
+4x - 3 & \text{si } \frac{3}{4} \leq x < 1.
+\end{cases}
+\]
+%
+En general, tenemos que, 
+\[
+D^n(x) = 2^n x - k, \quad \text{cuando} \quad x \in \left [\frac{k}{2^n},\frac{k+1}{2^n} \right )
+\]
+%
+donde \( k \) es un entero que varía entre $0$ y $2^n - 1$.
+Demostremoslo por hipótesis de inducción:
+
+Sabemos que \( D^{n+1}(x) = D(D^n(x)) \). Evaluamos \( D(D^n(x)) \) considerando los diferentes intervalos que dependen de \( k \).
+\newline
+Cuando  \( 0 \leq 2^n x - k < \frac{1}{2} \):
+En este caso, por la definición de \( D(x) \), se tiene:
+\[
+D(D^n(x)) = D(2^n x - k) = 2(2^n x - k) = 2^{n+1} x - 2k.
+\]
+%
+Cuando  \( \frac{1}{2} \leq 2^n x - k < 1 \):
+En este caso, por la definición de \( D(x) \), se tiene:
+\[
+D(D^n(x)) = D(2^n x - k) = 2(2^n x - k) - 1 = 2^{n+1} x - 2k - 1.
+\]
+%
+Como $k$ es un entero que varía entre $0$ y $2^n-1$, tomando $k'$ como $2k$ cuando \( 0 \leq 2^n x - k < \frac{1}{2} \) y como $2k+1$ cuando \( \frac{1}{2} \leq 2^n x - k < 1 \), tenemos que $k'$ es un entero que varía entre $0$ y $2^{n+1}-1$ y podemos expresar \( D^{n+1}(x) \) de la forma:
+\[
+D^{n+1}(x) = 2^{n+1} x - k' \quad \text{cuando} \quad x \in \left [\frac{k'}{2^{n+1}},\frac{k'+1}{2^{n+1}} \right )
+\]
+%
+Concluimos $ D^n(x) = 2^n x \mod 1 $, por lo que el gráfico de $ D^n $ consiste en $ 2^n $ líneas con pendiente $ 2^n $, cada una extendiéndose sobre todo el intervalo $[0,1]$.
+
+Veamos que el sistema dinámico asociado a la función es caótico en $[0,1]$.
+Comencemos viendo que los puntos periódicos son densos. Notemos que $ D^n $ lleva cualquier intervalo de la forma $[k/2^n, (k+1)/2^n]$ para $ k = 0, 1, \dots, 2^n - 2 $ al intervalo $[0,1]$. Por lo tanto, la imagen de $[k/2^n, (k+1)/2^n]$ sobre $ D^n $ cruza la diagonal $ y = x $ en algún punto de este intervalo, es decir, $D^n$ tiene algún punto fijo, lo que implica que hay un punto periódico en cualquier subintervalo. Dado que las longitudes de estos intervalos son $ 1/2^n $, a medida que $n \to \infty$, la distancia entre dos puntos periódicos tiende a $0$, se deduce que los puntos periódicos son densos en $[0,1]$.
+
+La transitividad también sigue, ya que dado cualquier intervalo abierto $ J \subset [0,1]$, siempre podemos encontrar un intervalo de la forma $[k/2^n, (k+1)/2^n]$ dentro de $ J $ para $ n $ suficientemente grande. Por lo tanto, $ D^n(J)  = [0,1]$. 
+
+Para probar la sensibilidad tomamos una constante en el intervalo $ 0 < \tau < \frac{1}{2}$. Dado un $x_0 \in [0,1]$
+para cualquier $n > 1$ existe un $k \in \{0, 1 , \ldots 2^n - 1 \}$ tal que $x_0 \in [k/2^n, (k+1)/2^n]$, por tanto dado un entorno cualquiera $U$ de $x_0$ existe un $n \in \mathbb{N}$ tal que $[k/2^n, (k+1)/2^n] \subset U$, esto implica que $ D^n(U)  = [0,1]$, basta tomar como $y_0$ al elemento que haga máxima la fórmula $\left| D^n(x) - x_0\right| $, es decir, $y_0 = \arg\max_{x \in U} \left| D^n(x) - D^n(x_0)\right| $.
+
+Como $ D^n(U)  = [0,1]$ y dado un punto cualquiera $x$ en el intervalo $[0,1]$ siempre existe otro punto $y$ en $[0,1]$ que cumple que $d(x,y) \geq \frac{1}{2}$ hemos demostrado que $|D^{n}(y_0) - D^{n}(x_0)| \geq \frac{1}{2} > \tau$.
+
+
+\begin{definicion}
+    
+Supongamos que $I$ y $J$ son intervalos y $f: I \to I$ y $g: J \to J$. Decimos que $f$ y $g$ son conjugadas si existe un homeomorfismo $h: I \to J$ tal que $h$ satisface la ecuación de conjugación $h \circ f = g \circ h$.
+
+\end{definicion}
+
+Una conjugación lleva órbitas de $f$ a órbitas de $g$. Esto se sigue de que tenemos $h(f^n(x)) = g^n(h(x))$ para todo $x \in I$, por lo que $h$ lleva el $n$-ésimo punto en la órbita de $x$ bajo $f$ al $n$-ésimo punto en la órbita de $h(x)$ bajo $g$. De manera similar, $h^{-1}$ lleva órbitas de $g$ a órbitas de $f$.
+
+
+\begin{ejemplo}
+    
+Consideremos la ecuación logística $f_4: [0,1] \to [0,1]$ dada por $f_4(x) = 4x(1-x)$ y la función cuadrática $g: [-2,2] \to [-2,2]$ dada por $g(x) = x^2 - 2$. Sea $h(x) = -4x + 2$ y notemos que $h$ lleva $[0,1]$ a $[-2,2]$. Además, tenemos $h(4x(1-x)) = (h(x))^2 - 2$, por lo que $h$ satisface la ecuación de conjugación y $f_4$ y $g$ son conjugadas.
+
+\end{ejemplo}
+
+Desde el punto de vista de sistemas caóticos, las conjugaciones son importantes ya que llevan un sistema caótico a otro.
+
+\begin{proposicion}\label{Prop5}
+Supongamos que $f: I \to I$ y $g: J \to J$ son conjugadas vía $h$, donde tanto $I$ como $J$ son intervalos cerrados en $\mathbb{R}$ de longitud finita. Si el sistema dinámico discreto de $f$ es caótico en $I$, entonces el de $g$ también es caótico en $J$.
+\end{proposicion}
+
+\begin{proof}
+Comenzamos viendo que los puntos periódicos de $g$ son densos en $J$:
+
+Como $h$ lleva puntos periódicos de $f$ a puntos periódicos de $g$, es decir, si $x \in I$ es un punto periódico de $f$ entonces $h(x)$ es un punto periódico de $g$, ya que:
+\[
+g^n(h(x)) = h(f^n(x)) = h(x)
+\]
+%
+Como los puntos periódicos son densos en $f$, y $h$ es un homeomorfismo conserva las propiedades topológicas de $f$ sobre $I$ entonces los puntos periódicos de $g$ son densos en $J$.
+
+A continuación estudiamos la transitividad de $g$:
+Si $U$ y $V$ son subintervalos abiertos de $J$, entonces $h^{-1}(U)$ y $h^{-1}(V)$ son intervalos abiertos en $I$. Por transitividad de $f$, existe $x_1 \in h^{-1}(U)$ tal que $f^m(x_1) \in h^{-1}(V)$ para algún $m$. Pero entonces $h(x_1) \in U$ y tenemos $g^m(h(x_1)) = h(f^m(x_1)) \in V$, por lo que $g$ también es transitiva.
+
+Para probar la sensibilidad, supongamos que $f$ tiene constante de sensibilidad $\tau$. Sea $I = [\alpha_0, \alpha_1]$. Podemos asumir que $\tau < \alpha_1 - \alpha_0$. Para cualquier $x \in [\alpha_0, \alpha_1 - \tau]$, consideremos la función $|h(x+\tau) - h(x)|$. Esta es una función continua en $[\alpha_0, \alpha_1 - \tau]$ y positiva.
+
+Por tanto, existe un valor mínimo \( \tau' > 0 \) tal que
+\[
+|h(x+\tau) - h(x)| \geq \tau' \quad \forall \, x \in [\alpha_0, \alpha_1 - \tau].
+\]
+Esto implica que la función \( h \) transforma intervalos de longitud \( \tau \) contenidos en \( [\alpha_0, \alpha_1] \) en intervalos de longitud al menos \( \tau' \) en el conjunto \( J \). En consecuencia, \( \tau' \) actúa como una constante de sensibilidad para la función \( g \). Veamos por qué:
+
+Sea \( x \in J \) y \( U \subset J \) un entorno de \( x \). Dado que \( f \) tiene dependencia sensible respecto de las condiciones iniciales, existe un punto \( y_0 \in h^{-1}(U) \subset I \) y un entero \( n > 0 \) tal que
+\[
+\left| f^{n}(h^{-1}(x)) - f^{n}(y_0) \right| > \tau.
+\]
+Es decir, el intervalo \( (f^{n}(h^{-1}(x)), f^{n}(y_0)) \) tiene longitud mayor que \( \tau \). Como \( h \) transforma intervalos de longitud \( \tau \) en intervalos de longitud al menos \( \tau' \), se tiene que
+\[
+(h \circ f^{n}(h^{-1}(x)), h \circ f^{n}(y_0)) = (g^{n}(x), g^{n}(h(y_0)))
+\]
+es un intervalo de longitud superior a \( \tau' \), lo que implica:
+\[
+|g^{n}(x) - g^{n}(h(y_0))| > \tau'.
+\]
+Esto demuestra que \( g \) también presenta sensibilidad a las condiciones iniciales, con constante de sensibilidad \( \tau' \).
+
+\end{proof}
+
+\end{ejemplo}
+
+\section{Dinámica simbólica}
+
+Nos centramos ahora en una de las herramientas más útiles para analizar sistemas caóticos: la dinámica simbólica.
+
+Consideremos una función $f : \mathbb{R}/\mathbb{Z} \mapsto \mathbb{R}/\mathbb{Z}$. Dado un punto $x_0 \in  \mathbb{R}/\mathbb{Z}$ consideremos su órbita $x_{n+1} = f(x_n)$. Sean $I_0$ e $I_1$ dos intervalos disjuntos tal que $\operatorname{img}(f) \subset I_0 \cup I_1 \subseteq \mathbb{R}/\mathbb{Z} \simeq [0,1]$.
+
+Definimos la función $\psi : \mathbb{R}/\mathbb{Z} \mapsto \{ 0,1\}^{\mathbb{N}}$ donde la coordenada n-ésima de $\psi(x)$ toma el valor $0$ cuando $x_n \in I_0$ y el valor $1$ cuando $x_n \in I_1$.
+
+Sea \(\Sigma\) el conjunto de todas las secuencias posibles de $0$s y $1$s. Un elemento en el espacio \(\Sigma\) es una secuencia infinita de la forma \(s=(s_{0}s_{1}s_{2}...)\). Para estudiar \(\Sigma\), necesitamos estudiar la distancia entre distintos puntos de \(\Sigma\). Para ello necesitamos una distancia. Una función de distancia o métrica en \(\Sigma\) es una función \(d(s,t) : \Sigma \mapsto \Sigma\) que satisface:
+\begin{enumerate}
+    \item  \(d(s,t)\ge0\) y \(d(s,t)=0\) si y solo si \(s=t\)
+    \item  \(d(s,t)=d(t,s)\)
+    \item  La desigualdad triangular: \(d(s,u)\le d(s,t)+d(t,u)\)
+\end{enumerate}
+%
+Como \(\Sigma\) no es un subconjunto de un espacio euclidiano, no podemos utilizar una distancia euclidiana en \(\Sigma\). Por lo tanto debemos desarrollar nuestra propia distancia:
+\[
+d(s,t)=\sum_{i=0}^{\infty}\frac{|s_{i}-t_{i}|}{2^{i}}.
+\]
+%
+Donde \(s=(s_{0}s_{1}s_{2}...)\) y \(t=(t_{0}t_{1}t_{2}...)\) son elementos de \(\Sigma\). Los numeradores en esta serie son siempre 0 o 1, por lo que esta serie converge. Basta compararla con la serie geométrica:
+\[
+d(s,t)\le\sum_{i=0}^{\infty}\frac{1}{2^{i}}=\frac{1}{1-\frac{1}{2}}=2.
+\]
+%
+Es sencillo comprobar que esta elección de \(d(s,t)\) satisface los tres requisitos para ser una función de distancia:
+\begin{itemize}
+    \item 1. Como $s \neq t$ existe $i \in \mathbb{N}$ tal que $s_i \neq t_i$, por tanto $|s_i - t_1| \neq 0$, concluimos que $ 0 < |s_i - t_1| < \sum_{i=0}^{\infty}\frac{|s_{i}-t_{i}|}{2^{i}} = d(s,t)$. Si $s = t$ entonces $s_i = t_i$ para todo $i \in \mathbb{N}$ y por tanto $d(s,t) = \sum_{i=0}^{\infty}\frac{|s_{i}-t_{i}|}{2^{i}} = 0$.
+    \item 2. Gracias a que $|s_i - t_i| = |t_i - s_i|$ tenemos que \[d(s,t) = \sum_{i=0}^{\infty}\frac{|s_{i}-t_{i}|}{2^{i}} = \sum_{i=0}^{\infty}\frac{|t_{i}-s_{i}|}{2^{i}} = d(t,s).\]
+    \item 3. Es consecuencia de la desigualdad triangular del valor absoluto, como $|s_i - u_i| \leq |s_i - t_i| + |t_i - u_i|$ para todo  $i \in \mathbb{N}$ tenemos que 
+    $$d(s,u) = \sum_{i=0}^{\infty}\frac{|s_{i}-u_{i}|}{2^{i}} < \sum_{i=0}^{\infty}\frac{|s_{i}-t_{i}|}{2^{i}} + \sum_{i=0}^{\infty}\frac{|t_{i}-u_{i}|}{2^{i}} = d(s,t) + d(t,u)$$
+    
+\end{itemize}
+
+A continuación presentamos una característica  de la nueva distancia definida
+
+\begin{proposicion}
+    
+Supongamos que \(s=(s_{0}s_{1}s_{2}...)\), \(t=(t_{0}t_{1}t_{2}...)\in\Sigma\).
+\begin{itemize}
+    \item 1. Si \(s_{j}=t_{j}\) para \(j=0,...,n\), entonces \(d(s,t)\le1/2^{n}\)
+    \item2. Recíprocamente, si \(d(s,t)<1/2^{n}\), entonces \(s_{j}=t_{j}\) para \(j=0,...,n\)
+\end{itemize}
+
+\end{proposicion}
+
+\begin{proof}
+
+Si \(s_{j}=t_{j}\) para \(j=0,...,n\)
+\[
+d(s,t)=\sum_{i=0}^{n}\frac{|s_{i}-t_{i}|}{2^{i}}+\sum_{i=n+1}^{\infty}\frac{|s_{i}-t_{i}|}{2^{i}}
+\le0+\frac{1}{2^{n+1}}\sum_{i=0}^{\infty}\frac{1}{2^{i}} =\frac{1}{2^{n}}.
+\]
+%
+Si, por otro lado, \(d(s,t)<1/2^{n}\), entonces debe ocurrir que \(s_{j}=t_{j}\) para cualquier \(j\le n\), ya que de lo contrario \(d(s,t)\ge|s_{j}-t_{j}|/2^{j}=1/2^{j}\ge1/2^{n}\).
+
+\end{proof}
+
+
+A continuación presentamos una función que nos ayudará a simplificar el estudio del comportamiento caótico de un sistema dinámico asociado a una función $f$.
+
+Construimos \(\sigma:\Sigma\rightarrow\Sigma\) basada en las siguientes ideas:
+\begin{enumerate}
+    \item \(\sigma\) tiene asociado un sistema dinámico discreto caótico.
+    \item  \(\sigma\) es una conjugación discreta de \(f\) en \(\Lambda\), ambos conceptos serán definidos en secciones venideras. 
+    \item \(\sigma\) es completamente comprensible desde el punto de vista de los sistemas dinámicos.
+\end{enumerate}
+
+En la siguiente sección detallaremos estas afirmaciones.
+
+\begin{definicion}
+    
+Definimos la función de desplazamiento \(\sigma:\Sigma\rightarrow\Sigma\) como:
+\[
+\sigma(s_{0}s_{1}s_{2}...)=(s_{1}s_{2}s_{3}...).
+\]
+%
+\end{definicion}
+
+Es decir, la función de desplazamiento elimina el primer dígito en cada secuencia de \(\Sigma\). Tener en cuenta que \(\sigma\) es una función dos a uno en \(\Sigma\), es decir, la preimagen de cualquier elemento de \(\Sigma\) por \(\sigma\) está formada por dos elementos. Esto se sigue porque, si \((s_{0}s_{1}s_{2}...)\in\Sigma\), entonces tenemos
+\[
+\sigma(0s_{0}s_{1}s_{2}...)=\sigma(1s_{0}s_{1}s_{2}...)=(s_{0}s_{1}s_{2}...).
+\]
+%
+
+
+
+\begin{proposicion}
+
+La función de desplazamiento 
+\(\sigma:\Sigma\rightarrow\Sigma\) es continua.
+
+\end{proposicion}
+
+\begin{proof}
+
+Sea \(s=(s_{0}s_{1}s_{2}...), t=(t_{0}t_{1}t_{2}...)\in\Sigma\) y sea \(\epsilon>0\). Tomando \(n\) tal que \(1/2^{n}<\epsilon\), sea \(\delta=1/2^{n+1}\). Supongamos que \(d(s,t)<\delta\), entonces por la proposición anterior tenemos que \(s_{i}=t_{i}\) para \(i=0,...,n+1\). Por tanto \(\sigma(t)=(s_{1}s_{2}...s_{n}t_{n+1}t_{n+2}...)\), de modo que \(d(\sigma(s),\sigma(t))\le1/2^{n}<\epsilon\). Esto prueba que \(\sigma\) es continua.
+
+\end{proof} 
+
+Podemos escribir fácilmente todos los puntos periódicos de cualquier período para la función de desplazamiento. De hecho, los puntos fijos son \((\overline{0})\) y \((\overline{1})\). Los $2$-ciclos son \((\overline{01})\) y  \((\overline{10})\). En general, los puntos periódicos de período \(n\) están dados por secuencias repetidas que consisten en bloques repetidos de longitud \(n\): \((\overline{s_{0}...s_{n-1}})\).
+
+\begin{proposicion}
+
+El conjunto de puntos periódicos de $\sigma$ es denso en $\Sigma$.
+
+\end{proposicion}
+
+\begin{proof}
+
+El conjunto de puntos periódicos de $\sigma$ es $S = \bigcup_{n=0}^\infty \{ (\overline{s_0,s_1,....,s_n}) $ $\text{ tal que } s_i = 0,1\}$, entonces para todo $n \in \mathbb{N}$ y
+cualquier punto \(t=(t_{0}t_{1}t_{2}...) \in \Sigma\) basta tomar $t_p = (\overline{t_0,t_1,....,t_n}) \in S$ y gracias a la proposición anterior tenemos que $|t - t_p|< \frac{1}{2^n}$, por tanto $S$ es denso.
+    
+\end{proof}
+
+
+\section{La ecuación logística}
+
+La ecuación logística es una familia de funciones de la forma:
+$$
+f(\lambda, x) = \lambda x (1 - x), \quad \lambda > 1.
+$$
+Podemos encontrar una gran cantidad de fenómenos en sus sistemas dinámicos. En esta sección estudiaremos brevemente algunas de sus propiedades básicas.
+
+Comenzamos nuestro estudio de la ecuación logística buscando sus puntos fijos: hay dos puntos fijos, $0$ y $\hat{x}_\lambda = 1 - \frac{1}{\lambda}$. Dado que asumimos que $\lambda > 1$, el último punto fijo siempre se encuentra en el intervalo $(0, 1)$. Para referencia futura, notar que:
+$$
+f'(\lambda, 0) = \lambda, \quad f'(\lambda, \hat{x}_\lambda) = 2 - \lambda, \quad f(\lambda, 0) = f(\lambda, 1) = 0.
+$$
+
+Procedemos a estudiar la discretización de la función logística $f(\lambda,x) = ax(1-x)$, aplicando el método de Euler a $f$ y tomando $b = ha$, obtenemos la ecuación en diferencias 
+$x_{n+1} = b x_n \left[\frac{(1 + b)}{b} - x_n \right]$. Mediante el cambio de variables $x_n \mapsto \frac{(1 + b)}{b} x_n$ entonces la ecuación se convierte en $
+x_{n+1} = (1 + b) x_n (1 - x_n)$. Además, si tomamos $(1 + b) = \lambda$, entonces la ecuación en diferencias es equivalente a la función logística de parámetro $\lambda$
+
+ En el siguiente lema mostramos el comportamiento de la ecuación logística para ciertos valores de $\lambda$ y $x_0$
+
+\begin{lema}
+Consideremos la ecuación logística:
+
+(i) Supongamos que $\lambda > 1$. Si $x_0 < 0$ o $x_0 > 1$, entonces $f^n(\lambda, x_0) \to -\infty$ a medida que $n \to +\infty$.
+
+(ii) Supongamos que $1 < \lambda < 4$. Si $x_0 \in (0, 1)$, entonces $f^n(\lambda, x_0) \in (0, 1)$ para cualquier entero positivo $n$.
+\end{lema}
+
+\begin{proof}
+
+(i) Si $x_0 < 0$, entonces $f(\lambda, x_0) =  \lambda x_0 (1 - x_0) < x_0$, teniendo en cuenta que $\lambda(1 - x_0) > 1 $ deducimos que $f^n(\lambda, x_0)$ es una sucesión decreciente. Esta sucesión no puede converger porque $f$ no tiene puntos fijos negativos. Si $x_0 > 1$, entonces $f(\lambda, x_0) < 0$; por lo tanto, se aplica el mismo argumento. (ii)Basta tener en cuenta que $max_{\lambda \in (1,4), x\in (0,1)}{f(\lambda, x)} < 1$.
+\end{proof}
+
+Ahora estudiaremos la dinámica de la ecuación logística para varios rangos del parámetro $\lambda$.
+
+\begin{itemize}
+
+  \item $1 < \lambda < 3$: Se deduce del Teorema 1.1 y de las ecuaciones $f'(\lambda, 0) = \lambda \; \text{y}
+  \newline
+  \; f'(\lambda, \hat{x}_\lambda) = 2 - \lambda$ que el punto fijo cero es inestable y $\hat{x}_\lambda = 1 - \frac{1}{\lambda}$ es asintóticamente estable.
+ 
+Estudiemos el comportamiento asintótico de \( x_n \) para \( 0 < x_0 < 1 \), dividiendo los casos de acuerdo con los valores de \( \lambda \):
+
+\begin{itemize}
+    \item[a)]  \( 1 < \lambda < 2 \)  
+    En este rango, \( f'(\lambda, \hat{x}_\lambda) = 2 - \lambda > 0 \), lo que implica que la función es monótona cerca del punto fijo \( \hat{x}_\lambda \).  
+    \begin{itemize}
+        \item Si \( 0 < x_0 \leq 0.5 \), por el Teorema del Valor Medio (TVM), se cumple que \( |f(\lambda, x_0) - \hat{x}_\lambda| < |x_0 - \hat{x}_\lambda| \). Por lo tanto, \( f^n(\lambda, x_0) \to \hat{x}_\lambda \) monótonamente a medida que \( n \to +\infty \).  
+        \item Si \( 0.5 < x_0 < 1 \), el mismo argumento se aplica considerando que la primera iteración \( f(\lambda, x_0) \) cae en el intervalo \( (0, 0.5) \).  
+    \end{itemize}
+     Para cualquier \( x_0 \in (0,1) \), \( \lim_{n \to +\infty} f^n(\lambda, x_0) = \hat{x}_\lambda \), lo que implica que \( \hat{x}_\lambda \) es un atractor global. Después de a lo sumo una iteración, las soluciones se aproximan a \( \hat{x}_\lambda \) monótonamente.  
+
+    \begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig51.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $f(x) = 1.8x(1-x)$ tomando $x_0 < 0.5$}
+        \label{fig:mi_imagen_9_5}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig17.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $f(x) = 1.8x(1-x)$ tomando $x_0 > 0.5$}
+        \label{fig:mi_imagen_10_5}
+    \end{subfigure}
+    \caption{Estudio puntos fijos de la ecuación logística para $\lambda = 1.8$}
+    \label{fig:mi_imagen_total1.8_5}
+    \end{figure}
+
+    \item[b)] \( \lambda = 2 \):
+    Aquí, \( f'(2, x) = 2 - 4x \).  
+    \begin{itemize}
+        \item Si \( x_0 \in (0, 0.5) \), entonces \( f'(2, x_0) > 0 \), y por el TVM, \( f^n(2, x_0) \to \hat{x}_\lambda \) monótonamente cuando \( n \to +\infty \).  
+        \item Si \( x_0 \in (0.5, 1) \), \( f'(2, x_0) < 0 \), lo que implica que la órbita no converge monótonamente al punto fijo \( \hat{x}_\lambda = 0.5 \). Sin embargo, este punto fijo es estable ya que \( |f'(2, 0.5)| < 1 \).  
+    \end{itemize}
+    
+    \begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig53.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $f(x) = 2x(1-x)$ tomando $x_0 < 0.5$}
+        \label{fig:mi_imagen_9_6}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig54.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $f(x) = 2x(1-x)$ tomando $x_0 > 0.5$}
+        \label{fig:mi_imagen_10_6}
+    \end{subfigure}
+    \caption{Estudio puntos fijos de la ecuación logística para $\lambda = 2$}
+    \label{fig:mi_imagen_total1.10_5}
+    \end{figure}
+    
+    \item[c)] \( 2 < \lambda < 3 \):
+    En este rango, \( f'(\lambda, \hat{x}_\lambda) < 0 \), lo que significa que la función no es monótona en torno al punto fijo \( \hat{x}_\lambda \). Sin embargo, \( \hat{x}_\lambda \) sigue siendo un atractor global en $(0,1)$. En este caso, la órbita de \( f^n(\lambda, x_0) \) converge a \( \hat{x}_\lambda \), pero de manera oscilante en lugar de monótona.  
+
+    \begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig55.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $f(x) = 2.5x(1-x)$ tomando $x_0 < 0.5$}
+        \label{fig:mi_imagen_9_9}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig56.png}  % Reemplaza con el nombre de tu imagen
+        \caption{Diagrama de Cobweb a la función $f(x) = 2.5x(1-x)$ tomando $x_0 > 0.5$}
+        \label{fig:mi_imagen_10_7}
+    \end{subfigure}
+    \caption{Estudio puntos fijos de la ecuación logística para $\lambda = 2.5$}
+    \label{fig:mi_imagen_total1.10_7}
+    \end{figure}
+    
+\end{itemize}
+
+\item $\lambda = 3$: El punto fijo $0$ es inestable. El tipo de estabilidad de $\hat{x}_\lambda$ no puede determinarse a partir del Teorema~\ref{Teorema1.3.1} porque $f'(\hat{x}_\lambda) = -1$, por tanto calcularemos la segunda derivada en $0$ y utilizar el Teorema~\ref{Teorema1.3.2}, como $f'(x) = -2\lambda$ y estamos suponiendo que $\lambda = 3$ entonces $f'(\hat{x}_\lambda) = -6 < 0$, por tanto debemos de calcular $f'''(\hat{x}_\lambda) + \frac{3}{2}f''(\hat{x}_\lambda)^2 > 0$, concluimos que el punto fijo $\hat{x}_\lambda$ es estable.
+
+\item $3 < \lambda < 1 + \sqrt6$. En este caso el punto fijo cero y $\hat{x}_\lambda$ son inestables, por tanto, las iteraciones $f^n(\lambda,x_0) $ con $x_0 \in (0,1)$ no se pueden acercar a ninguno de los puntos fijos. De todas formas estos se mantienen en el intervalo $(0,1)$. Al estar la sucesión de iteraciones acotada se produce una bifurcación de doble periodo en el punto fijo $\hat{x}_\lambda$. La existencia y estabilidad asintótica de dicha orbita periódica puede ser determinada analizando los ceros de la función $f^2(\lambda,x) - x$. En efecto, teniendo en cuenta que $x = 0$ y $x = \hat{x}_\lambda$ son raíces de $f^2(\lambda,x) - x$ se puede mostrar que la órbita periódica de periodo 2 se encuentra en las raíces de la ecuación $\lambda^2 x^2 - \lambda(\lambda+1)x +\lambda + 1 = 0$. Para $3 < \lambda < 1 + \sqrt6$, esta órbita de periodo 2 es asintoticamente estable. Puede mostrarse que es un atractor global a excepción de una cantidad numerable de condiciones iniciales que caen en el punto fijo $\hat{x}_\lambda$ tras un número finito de iteraciones.
+
+También podemos estudiar la bifurcación de periodo doble a partir del Teorema 1.2. Para aplicar este teorema a la ecuación logística, necesitamos trasladar el punto fijo $\hat{x}_\lambda$ al origen y también trasladar el valor de bifurcación $\lambda = 3$ a cero. Para ello, introducimos la nueva variable $y$ y el parámetro $\mu$, definidos por
+$$
+x = 1 - \frac{1}{\lambda} + y,
+$$
+y
+$$
+\lambda = 3 + \mu.
+$$
+Entonces, la ecuación logística se convierte en
+$$
+f(\mu, y) = -\left(1 + \mu\right)y - \left(3 + \mu\right)y^2.
+$$
+Esta función ya ha sido estudiada en el Ejemplo~\ref{Ejemplo2.3.1}.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig18.png}  % Reemplaza con el nombre de tu imagen
+        \caption{$\lambda = 2.8$}
+        \label{fig:mi_imagen_18}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig19.png}  % Reemplaza con el nombre de tu imagen
+        \caption{$\lambda = 3$}
+        \label{fig:mi_imagen_19}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig20.png}  % Reemplaza con el nombre de tu imagen
+        \caption{$\lambda = 3.2$}
+        \label{fig:mi_imagen_20}
+    \end{subfigure}
+    \caption{Estudio de los puntos fijos de la ecuación logística para $\lambda = 2.8$, $\lambda = 3$, $\lambda = 3.2$}
+    \label{fig:mi_imagen_total15}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig21.png}  % Reemplaza con el nombre de tu imagen
+        \caption{$\lambda = 2.8$}
+        \label{fig:mi_imagen_21}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig22.png}  % Reemplaza con el nombre de tu imagen
+        \caption{$\lambda = 3$}
+        \label{fig:mi_imagen_22}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig23.png}  % Reemplaza con el nombre de tu imagen
+        \caption{$\lambda = 3.2$}
+        \label{fig:mi_imagen_23}
+    \end{subfigure}
+    \caption{Estudio de los puntos fijos de la segunda iteración de la ecuación logística para $\lambda = 2.8$, $\lambda = 3$, $\lambda = 3.2$}
+    \label{fig:mi_imagen_total_2}
+\end{figure}
+
+
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig24.png}  % Reemplaza con el nombre de tu imagen
+        \label{fig:mi_imagen_24_1}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig25.png}  % Reemplaza con el nombre de tu imagen
+
+        \label{fig:mi_imagen_25}
+    \end{subfigure}
+
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig26.png}  % Reemplaza con el nombre de tu imagen
+        \label{fig:mi_imagen_26}
+    \end{subfigure}
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.45\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig27.png}  % Reemplaza con el nombre de tu imagen
+        \label{fig:mi_imagen_27}
+    \end{subfigure}
+    \caption{Representación de órbitas periódicas asintoticamente estables de periodos $2$, $4$, $8$, $16$  donde la ecuación logística toma los valores $\lambda = 3.2$, $\lambda = 3.52$, $\lambda = 3.55$, $\lambda = 3.567$, se han eliminado las $100$ iteraciones iniciales}    
+    \label{fig:mi_imagen_total16}
+\end{figure}
+
+\end{itemize}
+
+A medida que va aumentando el valor de $\lambda$ resulta más complejo estudiar la dinámica de la función logística de forma cualitativa, por ello pasamos a calcular numéricamente el comportamiento para algunos valores del parámetro $\lambda$.
+
+\begin{itemize}
+
+\item $3.449 < \lambda < 3.570$ Estos valores de $\lambda$ dan comienzo a la aparición de unas dinámicas muy complejas. Por ejemplo cuando $\lambda = 3.449$ la órbita $2$-periódica da lugar a una órbita estable y asintótica de periodo $4$. De hecho hay una sucesión creciente de parámetros $A_1 < \lambda_2 < \lambda_3 < ....$ en la cual la ecuación logística sufre repetidamente una bifurcación de doble periodo: A medida que $\lambda_k$ va aumentando la órbita periódica asintoticamente estable de periodo $2^k$ se inestabiliza y una órbita periódica estable con un periodo doble se bifurca de la órbita del periodo inferior. Los primeros valores de la bifurcación son:
+
+$$
+\lambda_1 = 3, \quad \lambda_2 = 3.449, \quad \lambda_3 = 3.544, \quad \lambda_4 = 3.564, \quad \text{.\ .\ .\ .}
+$$
+
+La sucesión converge a un número $\lambda_\infty$ cuando $k \to \infty$ y $\lambda_\infty$ es $3.5699456$. Además el ratio de las distancias de los valores de los parámetros entre  bifurcaciones de periodo doble sucesivas tiende a una constante:
+
+$$
+\lim_{k \to +\infty} \frac{\lambda_{k+1} - \lambda_k}{\lambda_k - \lambda_{k-1}} = 4.6692 \ldots
+$$
+
+Debido a la naturaleza geométrica de esta sucesión, a partir de un número de parámetros no es fácil determinar los valores de la bifurcación. Sin embargo, gracias a la constante anterior este problema se vuelve trivial.
+
+\item $\lambda > 3.570$ Para estos valores del parámetro la dinámica de la ecuación logística se vuelve bastante complicada. Para algunos valores de $\lambda$ las iteraciones se mueven de forma errática, un comportamiento llamado "caos". Por último estudiaremos un caso particular muy interesante:
+
+\item $\lambda = 3.839$ Hay una única órbita periódica asintoticamente estable de periodo $3$. Computacionalmente podemos obtener esta órbita iterando un valor inicial cualquiera lo suficientemente largo.
+
+$$
+\hat{x}_\lambda = 0.149888,f^2(\hat{x}_\lambda) = 0.959299,
+$$
+
+$$
+f(\hat{x}_\lambda) = 0.489172, f^3(\hat{x}_\lambda) = 0.149888.
+$$
+
+De todas maneras, Podemos ver más allá de lo que nos muestra el ordenador sobre la dinámica de la ecuación logística en $\lambda = 3.839$ a través del teorema de Sharkovskii. Para enunciar el teorema ordenemos los números enteros de la siguiente manera, denominada orden de Sharkovskii:
+
+$$
+3  \vartriangleright  5  \vartriangleright  7 \vartriangleright  \cdots  \vartriangleright  2 \cdot  3  \vartriangleright  2 \cdot  5 \ \vartriangleright  2 \cdot 7  \vartriangleright  \cdots 
+2^2 \cdot  3  \vartriangleright  2^2 \cdot  5  \vartriangleright  2^2 \cdot  7  \vartriangleright  \ \cdots \\
+$$
+
+$$ 
+\vartriangleright \ 2^3 \cdot \ 3 \ \vartriangleright \ 2^3 \cdot \ 5 \ \vartriangleright \ 2^3 \cdot \ 7 \ \vartriangleright \ \cdots \\
+\vartriangleright \ 2^3   \vartriangleright \ 2^2 \vartriangleright \ 2 \vartriangleright \ 1
+$$
+
+En otras palabras: Escribe todos los números impares excepto 1, luego $2$ por todos los números impares, luego $2^2$ por los números impares, etc.  Por último, escribir las potencias de $2$ en orden decreciente con $1$ al final. Esta lista contiene todos los números naturales.
+
+\begin{teorema}[Tª de Sharkovskii (ver \cite{ref2})]
+
+Sea \( f: \mathbb{R} \to \mathbb{R} \) una función continua. Supongamos que \( f \) tiene un punto periódico de periodo mínimo \( m \). Si \( m \vartriangleright n \) en el orden de Sharkovskii, entonces \( f \) también tiene un punto periódico de periodo mínimo \( n \).
+    
+\end{teorema}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{fig28.png}
+    \caption{Podemos observar la presencia de caos en la órbita de  la ecuación logística cuando $\lambda = 3.891$}
+    \label{fig:mi_imagen28}
+\end{figure}
+
+Una importante consecuencia de este teorema es que si $f$ tiene un punto periódico de periodo mínimo $3$ entonces tiene puntos periódicos de todo periodo mínimo. En particular, la ecuación logística en $\lambda = 3.839$. Además de tener una órbita 3-periódica tiene órbitas periódicas de todos los periodos mínimos.
+
+\item $ 3.839 < \lambda < 4$. A medida que $\lambda$ aumenta la órbita 3-periódica sufre una bifurcación de doble periodo y pierde su estabilidad en favor de una órbita 6- periódica asintóticamente estable. Si $\lambda $ sigue aumentando hay una sucesión de bifurcaciones de doble periodo. Extraordinariamente el ratio de las distancia entre las bifurcaciones de doble periodo vuelve a aproximarse a la constante $4.6692$.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig29.png}  % Reemplaza con el nombre de tu imagen
+        \label{fig:mi_imagen_29}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig30.png}  % Reemplaza con el nombre de tu imagen
+        \label{fig:mi_imagen_30}
+    \end{subfigure}%
+    \hfill  % Espacio horizontal entre subfiguras
+    \begin{subfigure}{0.3\textwidth}  % Ajusta el tamaño según sea necesario
+        \centering
+        \includegraphics[width=\textwidth]{fig31.png}  % Reemplaza con el nombre de tu imagen
+        \label{fig:mi_imagen_31}
+    \end{subfigure}
+    \caption{Representación de órbitas periódicas asintóticamente estables de periodos $3$, $6$, $12$, donde la ecuación logística toma los valores $\lambda = 3.839$, $\lambda = 3.845$, $\lambda = 3.849$. Se han eliminado las $100$ iteraciones iniciales.}
+    \label{fig:mi_imagen_total_3}
+\end{figure}
+
+\end{itemize}
+
+Pasamos a estudiar la ecuación logística \(f_{\lambda}(x)=\lambda x(1-x)\) cuando \(\lambda>4\). Para dichos valores, la dinámica de la función comienza a presentar caos.
+
+La representación gráfica parece implicar que casi todas las órbitas tienden a $-\infty$. Ver Figura~\ref{fig:mi_imagen41}. Sin embargo, este no es el caso, ya que esta función tiene puntos fijos y periódicos. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{fig41.png}
+    \caption{Podemos observar la presencia de caos en la órbita de  la ecuación logística cuando $\lambda> 4$}
+    \label{fig:mi_imagen41}
+\end{figure}
+
+A diferencia del caso \(\lambda < 4\), el intervalo \(I=[0,1]\) ya no es invariante cuando \(\lambda>4\). Ciertas órbitas escapan de \(I\) y luego tienden a $-\infty$. En esta sección estudiaremos el comportamiento de las órbitas que no salen de \(I\). 
+
+
+\begin{proposicion}
+
+Sea \(\Lambda\) el conjunto de puntos en \(I\) con órbitas que nunca salen de \(I\), entonces, $\Lambda$ es de la forma: 
+\[
+\Lambda=I-\bigcup_{n=0}^{\infty}A_{n}.
+\]
+%
+Donde $A_0  = \{ x \in \mathbb{R} \text{ tal que } f_{\lambda}(x)>1 \}$ y los $A_n$ se definen de forma recursiva:
+$$
+A_n = f_{\lambda}^{-1}(A_{n-1}) \cap I \text{  para  } n \in \mathbb{N}
+$$
+\end{proposicion}
+
+\begin{proof}
+
+Para cualquier \(x\in A_0\) ocurre \(f_{\lambda}^{2}(x) = f_{\lambda}(f_{\lambda}(x))<0\) y, como consecuencia, las órbitas de todos los puntos en \(A_0\) tienden a \(-\infty\). Tener en cuenta que cualquier órbita que sale de \(I\) debe pasar por \(A_0\) antes de diverger a \(-\infty\).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{fig49.png}
+    \caption{Representación gráfica de $f_{\lambda}(x)$, $f_{\lambda}^{2}(x)$ y $f_{\lambda}^{3}(x)$}
+    \label{fig:mi_imagen41_1}
+\end{figure}
+
+Por otra parte, \(A_1\) está formado por dos intervalos abiertos en \(I\), uno a cada lado de \(A_0\). Como para todo  \(x \in A_1\) ocurre que \(f_{\lambda}(x) \in A_0\) las  órbitas de \(A_1\) también tienden a \(-\infty\). Nuevamente, los puntos extremos de \(A_1\) eventualmente son puntos fijos. 
+
+\(A_{2}\) está formado por cuatro intervalos, ya que cada uno de los dos intervalos abiertos en \(A_1\) tienen como preimagen un par de intervalos disjuntos, en estos cuatro intervalos abiertos  la primera iteración de  \(f_{\lambda}(x)\) sobre sus puntos está en \(A_1\) y la segunda en \(A_0\), y por lo tanto, todos estos puntos tienen órbitas que tienden a \(-\infty\). 
+
+En general, sea \(A_{n}\) el conjunto de puntos en \(I\) donde la \(n\)-ésima iteración se encuentra en \(A_0\). \(A_{n}\) consiste en \(2^{n}\) intervalos abiertos disjuntos en \(I\). Cualquier punto donde la órbita no abandona \(I\) debe estar en uno de los \(A_{n}\).
+
+\end{proof}
+
+A continuación vamos a aplicar la dinámica simbólica a la ecuación logística \(f_{\lambda}\) cuando $\lambda > 4$. Definamos la función itinerario sobre \(f_{\lambda}\):
+
+En este caso tomaremos como intervalos \(I_{0}\) e \(I_{1}\) a los intervalos cerrados izquierdo y derecho, respectivamente, de \(I-A_0\). 
+
+Dado \(x_{0}\in\Lambda\), toda la órbita de \(x_{0}\) se encuentra en \(I_{0}\cup I_{1}\). Por tanto, definimos la función itinerario como la que asociará una secuencia infinita \(S(x_{0})=(s_{0}s_{1}s_{2}...)\) de 0s y 1s al punto \(x_{0}\) a través de la regla
+\[
+s_{j}=k \text{ si y solo si } f_{\lambda}^{j}(x_{0})\in I_{k}.
+\]
+%
+Es decir, simplemente observamos cómo \(f_{\lambda}^{j}(x_{0})\) oscila alrededor de \(I_{0}\) e \(I_{1}\), asignando un 0 o un 1 en la etapa \(j\)-ésima dependiendo del intervalo en el que se encuentre \(f_{\lambda}^{j}(x_{0})\).
+
+\begin{ejemplo}
+    
+El punto fijo 0 tiene itinerario \(S(0)=(000...)\). El punto fijo \(x_{\lambda}\) en \(I_{1}\) tiene itinerario \(S(x_{\lambda})=(111...)\). El punto \(x_{0}=1\) eventualmente se fija y tiene itinerario \(S(1)=(1000...)\). Un 2-ciclo que salta entre \(I_{0}\) e \(I_{1}\) tiene itinerario \((\overline{01}...)\) o \((\overline{10}...)\), donde \(\overline{01}\) representa una secuencia infinita donde se repite el patrón $01$
+
+\end{ejemplo}
+
+\begin{teorema}
+
+Cuando $\lambda > 4$ la función itinerario de $f_{\lambda}$,  $S : \Lambda \mapsto \Sigma$ es un homeomorfismo
+
+\end{teorema}
+
+
+La demostración de este teorema se escapa de los objetivos de este trabajo. La demostración se puede encontrar en la pg 348 de \cite{ref1}
+
+A continuación pasamos a estudiar los puntos periódicos de $f_{\lambda}$ a través de la función de desplazamiento $\sigma$ y con ayuda de la función itinerario $S$.
+
+Recordemos que una de la condiciones para poder utilizar la función de desplazamiento para estudiar la dinámica de una función es que esta sea conjugada de dicha función. En el siguiente teorema mostramos la existencia de una conjugación entre ambas funciones: 
+
+\begin{teorema}\label{Te3.3.3}
+
+La función  \(S:\Lambda\rightarrow\Sigma\) proporciona una conjugación entre \(f_{\lambda}\) y la función de desplazamiento \(\sigma\).
+
+\end{teorema}
+
+
+\begin{proof}
+
+En el teorema anterior demostramos que \(S\) es un homeomorfismo. Por lo tanto, basta con mostrar que \(S\circ f_{\lambda}=\sigma\circ S\). Sea \(x_{0}\in\Lambda\), supongamos que \(S(x_{0})=(s_{0}s_{1}s_{2}...)\). Entonces tenemos \(x_{0}\in I_{s_{0}}, f_{\lambda}(x_{0})\in I_{s_{1}}, f_{\lambda}^{2}(x_{0})\in I_{s_{2}}\), y así sucesivamente. Esto implica que \(S(f_{\lambda}(x_{0}))=(s_{1}s_{2}s_{3}...)\), por lo que \(S(f_{\lambda}(x_{0}))=\sigma(S(x_{0}))\), que es lo que queríamos demostrar.
+
+\end{proof}
+
+Ahora, no solo podemos escribir todos los puntos periódicos de \(\sigma\), sino que podemos escribir explícitamente un punto en \(\Sigma\) que tiene una órbita densa. Por ejemplo:
+\[
+s^{*}=(0100011011000001...)
+\]
+%
+La secuencia \(s^{*}\) se construye enumerando sucesivamente todos los bloques posibles de 0s y 1s de longitud 1, longitud 2, longitud 3, y así sucesivamente. Claramente, alguna iteración de \(\sigma\) aplicada a \(s^{*}\) produce una secuencia que coincide con cualquier secuencia dada en un número arbitrariamente grande de lugares iniciales. Es decir, dado \(t=(t_{0}t_{1}t_{2}...)\in\Sigma\), podemos encontrar \(k\) tal que la secuencia \(\sigma^{k}(s^{*})\) comienza como:
+\[
+(t_{0}...t_{n}s_{n+1}s_{n+2}...)
+\]
+%
+y por lo tanto
+\[
+d(\sigma^{k}(s^{*}),t)\le1/2^{n}
+\]
+%
+Por lo tanto, la órbita de \(s^{*}\) se acerca arbitrariamente a cada punto en \(\Sigma\). Esto prueba que la órbita de \(s^{*}\) bajo \(\sigma\) es densa en \(\Sigma\) y por la Proposición~\ref{Prop3.1} \(\sigma\) es transitiva.
+ 
+Podemos construir más puntos con órbitas densas en \(\Sigma\), basta reorganizar los bloques en la secuencia \(s^{*}\). Esto es a lo que nos referíamos anteriormente cuando dijimos que la dinámica de \(\sigma\) es completamente comprensible.
+
+La función de desplazamiento también tiene dependencia sensible. De hecho, podemos tomar como constante de sensibilidad $1$. Ya que si \(s=(s_{0}s_{1}s_{2}...)\in\Sigma\) para cualquier $x \in U \subset \Sigma$ basta considerar el menor entero $n$ tal que $\max_{t \in U} d(s,t) > \frac{1}{2^n}$ consideramos el punto $s^{\prime} =(s_{0}s_{1}...s_{n}\hat{s}_{n+1}\hat{s}_{n+2}...)$ donde
+\(\hat{s}_{j}\) denota "no \(s_{j}\)" (es decir, si \(s_{j}=0\), entonces \(\hat{s}_{j}=1\), o si \(s_{j}=1\), entonces \(\hat{s}_{j}=0\)) el punto \(s^{\prime}\) cumple 
+\(d(s,s^{\prime})=1/2^{n}\) y por tanto $s^{\prime} \in U$, como \(d(\sigma^{n+1}(s),\sigma^{n+1}(s^{\prime}))=  \sum_{i=0}^{\infty}\frac{|s_{n+1+i}-\hat{s}_{n+1+i}|}{2^i} = \sum_{i=0}^{\infty}\frac{1}{2^i} = 2\)
+
+Hemos probado que el sistema dinámico discreto asociado a la función $\sigma$ es caótico.
+
+Gracias a la Proposición~\ref{Prop5} y al Teorema~\ref{Te3.3.3} hemos demostrado el siguiente teorema:
+
+\begin{teorema}
+el sistema dinámico discreto asociado a la función $f_{\lambda}$ es caótico en $\Lambda$ cuando $\lambda > 4$.
+\end{teorema}
+
+Por lo tanto, la dinámica simbólica nos proporciona un modelo computable para la dinámica de $f_{\lambda}$ en el conjunto $\Lambda$, a pesar del hecho de que el sistema dinámico discreto asociado a la función $f_{\lambda}$ en $\Lambda$.
+
+
+
+
+
+
+
+
+\begin{thebibliography}{99}
+    \bibitem{ref1} Morris W. Hirsch, Stephen Smale, Robert L. Devaney, {\em Differential Equations, Dynamical Systems, and an Introduction to Chaos}, Elsevier, 2003.
+    \bibitem{ref2} Jack K. Hale, Hüseyin Koçak, {\em Dynamics and Bifurcations,}  Springer, 1991
+    \bibitem{ref3} Erwin Kreyszig, {\em Introductory Functional Analysis with Applications,} John Wiley and Sons, 1978
+    \bibitem{ref4} Han Peters, RTNS24 conference, 2024
+    \bibitem{ref5} David Kincaid, Ward Cheney,{\em Numerical Analisys, Mathematics of Numerical Computing}, American Mathematical Society, 1990
+\end{thebibliography}
+
+\end{document}
