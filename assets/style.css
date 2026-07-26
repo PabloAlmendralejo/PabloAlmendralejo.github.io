@@ -9,9 +9,18 @@
   --color-accent: #0b5394;     /* enlaces, acentos */
   --color-muted: #6b7280;
   --color-bg: #ffffff;
+  --color-border: #e5e7eb;
   --max-width: 46rem;          /* ancho de columna de lectura */
   --font-body: Georgia, 'Times New Roman', serif;
   --font-ui: system-ui, sans-serif;
+}
+
+:root[data-theme="dark"] {
+  --color-text: #e5e7eb;
+  --color-accent: #7ab3e0;
+  --color-muted: #9ca3af;
+  --color-bg: #15151f;
+  --color-border: #33334a;
 }
 
 /* Base ------------------------------------------------------------------- */
@@ -71,7 +80,13 @@ img {
 /* Cabecera y navegación --------------------------------------------------- */
 .site-header {
   padding: 1.25rem 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .site-header nav {
@@ -81,6 +96,34 @@ img {
   font-family: var(--font-ui);
   font-size: 0.95rem;
 }
+
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-muted);
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* Show sun in dark mode, moon in light mode */
+.theme-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 
 .site-header nav a {
   color: var(--color-text);
@@ -178,7 +221,7 @@ img {
 .site-footer {
   margin-top: 3rem;
   padding: 1.25rem 0 2rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-border);
   font-family: var(--font-ui);
   font-size: 0.85rem;
   color: var(--color-muted);
@@ -206,7 +249,7 @@ img {
 embed[type="application/pdf"] {
   display: block;
   margin-top: 2rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
   min-height: 800px;
 }
 
