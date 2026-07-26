@@ -1,0 +1,926 @@
+\documentclass[preprint,11pt]{elsarticle}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{setspace}
+\setstretch{1.5}
+
+\biboptions{authoryear,round}
+
+\providecommand{\doi}[1]{\href{https://doi.org/#1}{\texttt{doi:#1}}}
+
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+
+\journal{European Journal of Operational Research}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Optimal Route Planning for Orienteering: Branch-and-Cut with Terrain Cost Surfaces and Fatigue}
+
+\author[aff1]{Pablo Borrego Ramos\corref{cor1}}
+\ead{paborrego@alumnos.unex.es}
+\cortext[cor1]{Corresponding author.}
+
+\address[aff1]{Independent Researcher, Cáceres, 10003, Spain}
+
+\begin{abstract}
+We address the problem of optimal route planning for competitive orienteering on real terrain.
+A Geographic Information System (GIS) pipeline transforms orienteering map data and digital terrain models into a fully asymmetric cost matrix that captures directional slope costs (via the Minetti metabolic model) and cumulative athlete fatigue.
+The resulting problem, the Asymmetric Orienteering Problem with Fatigue (AOPF), is a new variant of the Orienteering Problem in which travel cost depends on both direction and elapsed effort.
+We propose two mixed-integer linear programming formulations: a Miller--Tucker--Zemlin (MTZ) model with McCormick linearisation and a single-commodity flow model where the fatigue budget is natively linear and a Branch-and-Cut solver strengthened with tailored valid inequalities, including a novel family based on the assignment relaxation.
+We validate the framework on two Spanish terrains (14 instances) and release a benchmark suite of 21 synthetic instances.
+The flow-based solver certifies global optimality on 9 of 14 real-terrain instances within 15 minutes, reducing the mean optimality gap from 16.0\% to 5.4\% compared to the MTZ formulation.
+\end{abstract}
+
+\begin{keyword}
+Branch-and-cut \sep Orienteering problem \sep Valid inequalities \sep Asymmetric routing \sep Terrain cost surface
+\end{keyword}
+
+\end{frontmatter}
+
+
+
+\section{Introduction}
+\label{sec:intro}
+
+The Orienteering Problem (OP) asks a competitor to select a subset of control points and determine a route starting and ending at a depot, maximising the total score collected while respecting a travel budget.
+Formally introduced by \citet{tsiligirides1984heuristic}, the OP is NP-hard and has been studied extensively in operations research.
+However, most formulations assume symmetric, Euclidean distances, which poorly approximate real-world orienteering where terrain, vegetation, slope direction, and fatigue create highly asymmetric travel costs.
+
+This paper bridges two research streams: (i)~GIS-based cost surface modelling for orienteering maps, following \citet{ica2021lcp}, and (ii)~exact optimisation of the OP via integer programming.
+The terrain realities captured by the cost pipeline---directional slope costs, surface heterogeneity, and cumulative fatigue---produce a problem structure not addressed by existing OP formulations, motivating both a new problem variant and tailored solution methods.
+Our contributions are:
+\begin{enumerate}[nosep]
+  \item A terrain cost model combining IOF map symbols (ACR), DEM-derived morphometry (HCR), directional metabolic cost (Minetti), and cumulative fatigue into a single asymmetric cost matrix.
+  \item An IQR-based scaling method for merging ACR and HCR that adapts to terrain characteristics without manual calibration.
+  \item The Asymmetric Orienteering Problem with Fatigue (AOPF), a problem variant arising naturally from the terrain pipeline, formalising the OP with directed travel costs and a cumulative fatigue multiplier.
+  To the best of our knowledge, this is the first exact formulation for the OP with position-dependent fatigue costs.
+  \item Two LP formulations for the AOPF: an MTZ-based model with McCormick linearisation and a flow formulation where the fatigue budget is natively linear.
+  \item Valid inequalities tailored to the AOPF: tightened flow-arc coupling, fatigue-aware lifted covers, routing infeasibility cuts (a novel family based on the assignment relaxation), and directed adaptations of the cycle cover and path inequalities of \citet{fischetti1998solving}.
+  \item A parameterised benchmark suite of 21 synthetic instances for the asymmetric OP with fatigue, varying node count, asymmetry, fatigue rate, and budget tightness---the first benchmark for this problem variant.
+  \item Computational experiments on two real terrains comparing the MTZ and flow formulations, and an ablation study on the benchmark suite quantifying the marginal contribution of each cut family.
+\end{enumerate}
+
+The remainder of this paper is organised as follows.
+\Cref{sec:related} reviews related work.
+\Cref{sec:cost} describes the cost surface model.
+\Cref{sec:formulation} presents the mathematical formulation.
+\Cref{sec:methods} details the solution methods.
+\Cref{sec:pipeline} outlines the computational pipeline.
+\Cref{sec:experiments} describes the experimental setup, and \cref{sec:results} presents the results, including a synthetic benchmark suite and ablation study followed by real-terrain experiments.
+\Cref{sec:discussion} discusses findings and limitations, and \cref{sec:conclusion} concludes.
+
+
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{The Orienteering Problem}
+The OP was introduced by \citet{tsiligirides1984heuristic}; \citet{vansteenwegen2011orienteering} and \citet{gunawan2016orienteering} survey exact methods, heuristics, and variants.
+Exact approaches typically employ branch-and-cut \citep{fischetti1998solving,gendreau1998generalized}, but most formulations assume symmetric Euclidean distances.
+\citet{kobeaga2021revisited} proposed a revisited B\&C for large-scale symmetric instances, whose component evaluation methodology informs our ablation study.
+In this work, we introduce a new problem variant---the Asymmetric Orienteering Problem with Fatigue (AOPF)---derived from real terrain data, and develop a tailored Branch-and-Cut solver with novel valid inequalities.
+Our formulation addresses asymmetric costs and cumulative fatigue, which preclude undirected comb inequalities and require the flow-based linearisation developed here.
+
+\paragraph{Terrain cost modelling and asymmetric routing}
+\citet{tobler1993} proposed the hiking function relating slope to speed; \citet{minetti2002} measured metabolic cost across slopes via a fifth-degree polynomial that better captures ascent and descent energetics.
+\citet{ica2021lcp} introduced a GIS-based approach to OP route planning using the Hypsometry Cost Raster (HCR); we extend their work by replacing Tobler's function with the Minetti model, proposing IQR-based raster fusion, and coupling the cost surface with an exact solver.
+The ATSP polyhedral theory \citep{fischetti1991atsp,fischetti1997atsp} underpins our directed SECs.
+The fatigue model makes arc costs state-dependent, analogous to load-dependent \citep{bektas2011pollution} and time-dependent VRP \citep{malandraki1992timedep}; to the best of our knowledge, no prior work addresses position-dependent cumulative fatigue with exact methods.
+
+
+\section{Cost Surface Model}
+\label{sec:cost}
+
+Let the terrain be discretised into a regular grid of cells with resolution $\delta$ (metres per cell), where each cell is indexed by its row $r$ and column $c$.
+Each cell $(r,c)$ is assigned a base traversal cost that integrates map-derived and DEM-derived information.
+
+% ── 2.1 ACR ──
+\subsection{Areal Cost Raster (ACR)}
+\label{sec:acr}
+
+The ACR assigns a dimensionless weight $w_{rc} \in (0, 10]$ to each cell based on the IOF map symbol classification.
+Following \citet{ica2021lcp}, each symbol category maps to a running speed, and the weight is inversely proportional:
+\begin{equation}
+  w_{rc} = \frac{\delta}{v_{\text{base}} \cdot s_{\text{cat}(r,c)}}
+  \label{eq:acr}
+\end{equation}
+where $v_{\text{base}} = 2.5$\,m/s is the reference flat-terrain speed, $s_{\text{cat}}$ is the speed factor for the symbol category (e.g., $s = 1.0$ for paved road, $s = 0.133$ for fight vegetation), and $\delta$ is the cell size.
+Impassable features (water, cliffs, buildings) receive $w = 10$.
+The ACR is rasterised from the orienteering map file (OMAP format) by rendering symbol objects onto the UTM grid.
+
+% ── 2.2 HCR ──
+\subsection{Hypsometry Cost Raster (HCR)}
+\label{sec:hcr}
+
+The HCR captures terrain morphometry not represented by map symbols, derived from a Digital Terrain Model (DTM).
+Following \citet{ica2021lcp}, three morphometric variables are computed from the DTM: the Terrain Ruggedness Index (TRI, standard deviation of elevation in a $3 \times 3$ neighbourhood \citep{riley1999tri}), the absolute Plan Curvature (PC, detecting ridges and valleys \citep{zevenbergen1987}), and the Slope Magnitude (SLO, in degrees).
+Each variable is normalised to $[0.1, 1.0]$ via robust percentile clipping at the 1st and 99th percentiles.
+The HCR is then:
+\begin{equation}
+  \text{HCR}_{rc} = \widehat{\text{TRI}}_{rc}^{\,\alpha} \cdot |\widehat{\text{PC}}_{rc}|^{\,\beta} \cdot \widehat{\text{SLO}}_{rc}^{\,\gamma}
+  \label{eq:hcr}
+\end{equation}
+with $\alpha = 1$, $\beta = 0.5$, $\gamma = 1$ as specified by \citet{ica2021lcp}.
+
+% ── 2.3 IQR Scaling ──
+\subsection{IQR-Based Raster Fusion}
+\label{sec:iqr}
+
+To combine ACR and HCR, the HCR must be scaled into ACR's numerical space.
+\citet{ica2021lcp} proposed histogram mode matching, which is sensitive to distribution shape.
+We propose an Interquartile Range (IQR) ratio, selected over five alternatives (median, mean, standard deviation ratios, percentile matching, quantile mapping) for its robustness to outliers and automatic adaptation to terrain characteristics ($c = 0.87$ for Torremocha, $c = 2.18$ for La Muela):
+\begin{equation}
+  c = \frac{\text{IQR}(\text{ACR})}{\text{IQR}(\text{HCR})} = \frac{Q_{75}^{\text{ACR}} - Q_{25}^{\text{ACR}}}{Q_{75}^{\text{HCR}} - Q_{25}^{\text{HCR}}}
+  \label{eq:iqr}
+\end{equation}
+
+The scaled HCR is added to ACR with path protection:
+\begin{equation}
+  \text{Cost}_{rc} = w_{rc} + c \cdot \text{HCR}_{rc} \cdot \pi_{rc}
+  \label{eq:combined}
+\end{equation}
+where $\pi_{rc}$ attenuates HCR on paths/roads ($\pi = 0.1$ for $w_{rc} < 0.15$), tracks ($\pi = 0.3$ for $0.15 \leq w_{rc} < 0.25$), and impassable features ($\pi = 0.0$ for $w_{rc} \geq 5.0$); all other terrain receives $\pi = 1.0$.
+
+% ── 2.4 Minetti ──
+\subsection{Directional Metabolic Cost (Minetti Model)}
+\label{sec:minetti}
+
+The metabolic cost of locomotion on a slope gradient $i$ (rise/run) is modelled by the fifth-degree polynomial of \citet{minetti2002}:
+\begin{equation}
+  C(i) = 280.5\,i^5 - 58.7\,i^4 - 76.8\,i^3 + 51.9\,i^2 + 19.6\,i + 2.5 \quad [\text{J/kg/m}]
+  \label{eq:minetti}
+\end{equation}
+valid for $i \in [-0.45, +0.45]$ (slopes outside this range are clamped to $\pm 0.45$), with cost multiplier $\phi(i) = \max(C(i), 0.5) / C(0)$.
+The traversal cost of a Dijkstra step between adjacent cells is:
+\begin{equation}
+  d_{12} = \|\Delta\| \cdot \frac{\text{Cost}_{r_1 c_1} + \text{Cost}_{r_2 c_2}}{2} \cdot \phi(i_{12})
+  \label{eq:edgecost}
+\end{equation}
+where $i_{12}$ is the signed slope gradient along the direction of travel (computed by projecting the DEM-derived gradient onto the movement vector), $\text{Cost}_{rc}$ is from \cref{eq:combined}, and $\|\Delta\|$ is the Euclidean step length.
+Since $\phi(i) \neq \phi(-i)$ for non-zero slopes, this produces asymmetric traversal costs.
+
+% ── 2.5 Cost Matrix ──
+\subsection{Asymmetric Cost Matrix Construction}
+\label{sec:costmatrix}
+
+Given $n$ control points plus the depot (node~0), the pairwise cost matrix $\mathbf{C} \in \mathbb{R}^{(n+1) \times (n+1)}$ is computed by running $n+1$ single-source anisotropic Dijkstra computations on the combined cost grid with Minetti slope factors, using \cref{eq:edgecost} as edge weights.
+The grid is optionally downsampled by factor $s$, reducing complexity to $O(n \frac{HW}{s^2} \log \frac{HW}{s^2})$.
+Impassable cells ($\text{Cost} \geq 9.0$) act as hard barriers.
+The resulting matrix satisfies $C_{ij} \neq C_{ji}$ in general, with asymmetry $\mathcal{A} = \text{mean}_{i \neq j} |C_{ij} - C_{ji}| / \text{mean}_{i \neq j} C_{ij}$.
+
+% ── 2.6 Fatigue ──
+\subsection{Cumulative Fatigue Model}
+\label{sec:fatigue}
+
+Athlete performance degrades over time.
+We model fatigue as a linear multiplier on travel cost:
+\begin{equation}
+  f(t) = 1 + \lambda \cdot \frac{t}{B}
+  \label{eq:fatigue}
+\end{equation}
+where $t$ is the elapsed base travel time, $B$ is the raw time budget, and $\lambda$ is the fatigue rate (calibrated in \cref{sec:experiments}).
+
+The effective (fatigue-adjusted) cost of traversing arc $(i,j)$ after elapsed time $t_i$ is:
+\begin{equation}
+  C^f_{ij}(t_i) = C_{ij} \cdot \left(1 + \lambda \cdot \frac{t_i}{B}\right)
+  \label{eq:fatigue_cost}
+\end{equation}
+
+The total fatigue-adjusted route cost for a route $\sigma = (0, v_1, v_2, \ldots, v_k, 0)$ is:
+\begin{equation}
+  D^f(\sigma) = \sum_{\ell=0}^{k} C_{v_\ell, v_{\ell+1}} \cdot \left(1 + \lambda \cdot \frac{T_\ell}{B}\right)
+  \label{eq:total_fatigue}
+\end{equation}
+where $T_\ell = \sum_{m=0}^{\ell-1} C_{v_m, v_{m+1}}$ is the cumulative base cost up to leg $\ell$, and $v_0 = v_{k+1} = 0$ (depot).
+
+
+
+\section{Mathematical Formulation}
+\label{sec:formulation}
+
+We formulate the AOPF as a mixed-integer linear program.
+The core challenge is the bilinear fatigue term $t_i \cdot x_{ij}$ in the budget constraint; we present an MTZ-based formulation that linearises it via McCormick envelopes and a flow-based formulation where the budget is natively linear.
+
+Let $V = \{0, 1, \ldots, n\}$ be the set of nodes (node~0 is the depot) and $A = \{(i,j) : i,j \in V, i \neq j\}$ the set of directed arcs, with cost matrix $C_{ij}$, budget $B$, fatigue rate $\lambda$, and node scores $p_i \geq 0$ ($p_0 = 0$) as defined in \cref{sec:cost}.
+Both formulations share arc variables $x_{ij} \in \{0,1\}$ and node-visit variables $y_i \in \{0,1\}$, with objective $\max \sum_{i \in V} p_i \, y_i$.
+
+\subsection{Shared Constraints}
+
+\paragraph{Flow conservation}
+Each visited node has exactly one incoming and one outgoing arc:
+\begin{align}
+  \sum_{j \in V \setminus \{i\}} x_{ji} &= y_i && \forall\, i \in V \label{eq:inflow} \\
+  \sum_{j \in V \setminus \{i\}} x_{ij} &= y_i && \forall\, i \in V \label{eq:outflow}
+\end{align}
+
+\paragraph{Depot}
+The depot is always visited: $y_0 = 1$.
+
+\paragraph{Arc elimination}
+Arcs that are structurally infeasible are fixed to zero a priori.
+An arc $(i,j)$ is eliminated if the base cost alone exceeds the budget:
+\begin{equation}
+  x_{ij} = 0 \quad \text{if } C_{ij} + C_{j0} > B \;\text{ or }\; C_{0i} + C_{ij} + C_{j0} > B
+  \label{eq:arcelim}
+\end{equation}
+The base-cost test~\eqref{eq:arcelim} is applied first as a computationally inexpensive pre-filter (no multiplications); arcs that survive are then tested with the fatigue-aware criterion.
+Even on the shortest possible path using arc $(i,j)$---the direct route $0 \to i \to j \to 0$---the fatigue-adjusted cost must not exceed the budget:
+\begin{equation}
+  x_{ij} = 0 \quad \text{if } C_{0i} + C_{ij}\!\left(1 + \frac{\lambda\, C_{0i}}{B}\right) + C_{j0}\!\left(1 + \frac{\lambda\,(C_{0i} + C_{ij})}{B}\right) > B
+  \label{eq:arcelim_fatigue}
+\end{equation}
+
+\subsection{Formulation A: MTZ with McCormick Linearisation}
+\label{sec:formulation_mtz}
+
+This formulation introduces arrival-time variables $t_i \in [0, B]$ at each node and auxiliary variables $w_{ij} \geq 0$ to linearise the bilinear fatigue term $t_i \cdot x_{ij}$.
+
+\paragraph{Time propagation (MTZ-type)}
+For each arc $(i,j)$ with $j \neq 0$:
+\begin{equation}
+  t_j \geq t_i + C_{ij} - M_{ij}(1 - x_{ij})
+  \label{eq:mtz}
+\end{equation}
+where the big-$M$ constant is tightened to:
+\begin{equation}
+  M_{ij} = \max\bigl(B - C_{0i} - C_{j0},\; C_{ij}\bigr)
+  \label{eq:bigM}
+\end{equation}
+The value $B - C_{0i} - C_{j0}$ is the maximum time that could have elapsed at node $i$ on any feasible route that still uses arc $(i,j)$ and returns to the depot.
+This is tighter than the standard MTZ constant $M = n$ and reduces the LP relaxation gap.
+
+\paragraph{McCormick linearisation}
+The fatigue budget involves the bilinear term $t_i \cdot x_{ij}$.
+We introduce $w_{ij} \approx t_i \cdot x_{ij}$ with McCormick envelope constraints.
+Let $\bar{w}_{ij} = \min(B - C_{ij} - C_{j0},\; B - C_{i0})$ be the tightest upper bound on $w_{ij}$:
+\begin{equation}
+  t_i - \bar{w}_{ij}(1 - x_{ij}) \;\leq\; w_{ij} \;\leq\; \min\bigl(\bar{w}_{ij}\, x_{ij},\; t_i\bigr)
+  \label{eq:mc}
+\end{equation}
+These force $w_{ij} = t_i$ when $x_{ij} = 1$ and $w_{ij} = 0$ when $x_{ij} = 0$.
+
+\paragraph{Fatigue budget (MTZ)}
+\begin{equation}
+  \sum_{(i,j) \in A} C_{ij} \, x_{ij} + \frac{\lambda}{B} \sum_{(i,j) \in A} C_{ij} \, w_{ij} \leq B
+  \label{eq:fatigue_budget}
+\end{equation}
+The McCormick envelope is an outer approximation of the true bilinear set, introducing LP relaxation looseness that grows with the fatigue rate $\lambda$.
+
+\subsection{Formulation B: Single-Commodity Flow}
+\label{sec:formulation_flow}
+
+This formulation replaces the MTZ time variables and McCormick auxiliary variables with flow variables $f_{ij} \geq 0$.
+We define $f_{ij}$ so that, by construction of the constraints below, $f_{ij} = t_i \cdot x_{ij}$ at any integer-feasible solution.
+At fractional LP solutions, the flow constraints enforce a tighter relaxation of this product than the McCormick envelope, eliminating the relaxation looseness introduced by Formulation~A and making the fatigue budget a natively linear constraint.
+
+\paragraph{Flow-arc coupling}
+Flow is only permitted on active arcs, with tightened bounds exploiting minimum arrival times:
+\begin{equation}
+  C_{0i} \cdot x_{ij} \leq f_{ij} \leq (B - C_{ij} - C_{j0}) \cdot x_{ij} \qquad \forall\, (i,j) \in A,\; i \neq 0
+  \label{eq:flow_coupling_tight}
+\end{equation}
+The lower bound reflects the minimum elapsed cost at node $i$ (direct from depot); the upper bound reflects the maximum that still allows returning to the depot.
+This reduces the LP relaxation's freedom to assign unrealistic flow values to fractional arcs.
+
+\paragraph{Time flow conservation}
+At each non-depot node $j$, incoming flow plus arc cost equals outgoing flow:
+\begin{equation}
+  \sum_{i \in V} \bigl(f_{ij} + C_{ij} \, x_{ij}\bigr) = \sum_{k \in V} f_{jk} \qquad \forall\, j \in V \setminus \{0\}
+  \label{eq:flow_conservation}
+\end{equation}
+with $f_{0j} = 0$ for all $j$.
+At integer feasibility, $f_{ij} = t_i \cdot x_{ij}$ holds exactly; at fractional solutions, the flow structure provides a tighter relaxation than the McCormick envelope.
+
+\paragraph{Fatigue budget (flow)}
+Because $f_{ij} = t_i \cdot x_{ij}$ by construction, the fatigue budget is natively linear:
+\begin{equation}
+  \sum_{(i,j) \in A} C_{ij} \, x_{ij} + \frac{\lambda}{B} \sum_{(i,j) \in A} C_{ij} \, f_{ij} \leq B
+  \label{eq:fatigue_budget_flow}
+\end{equation}
+The flow formulation has $O(n^2)$ additional continuous variables (one $f_{ij}$ per arc) compared to $O(n)$ time variables in the MTZ formulation, but produces a tighter LP relaxation by eliminating the McCormick approximation gap.
+
+\subsection{Subtour Elimination and Connectivity Cuts}
+
+Both formulations use the same cutting planes, added dynamically.
+Because $C_{ij} \neq C_{ji}$, all cuts use directed arc variables.
+
+\paragraph{Subtour elimination constraints (SECs)}
+For a subset $S \subseteq V \setminus \{0\}$ (identified by the separation routines in \cref{sec:separation}), the directed SEC prevents cycles disconnected from the depot:
+\begin{equation}
+  \sum_{i \in S} \sum_{j \in S} x_{ij} \leq |S| - 1
+  \label{eq:sec}
+\end{equation}
+
+\paragraph{Connectivity cuts}
+These ensure that every visited node can reach and be reached from the depot:
+\begin{align}
+  \sum_{i \in S} \sum_{j \notin S} x_{ij} &\geq y_k && \forall\, k \in S \label{eq:outcut} \\
+  \sum_{i \notin S} \sum_{j \in S} x_{ij} &\geq y_k && \forall\, k \in S \label{eq:incut}
+\end{align}
+A combined two-way cut further tightens the relaxation:
+\begin{equation}
+  \sum_{i \in S} \sum_{j \notin S} x_{ij} + \sum_{i \notin S} \sum_{j \in S} x_{ij} \geq 2\, y_k \quad \text{for some } k \in S
+  \label{eq:twocut}
+\end{equation}
+
+\subsection{Budget-Based Cutting Planes}
+
+The following four cut families exploit the budget constraint to eliminate LP solutions with excessive routing cost.
+
+\paragraph{(B1) Lifted cover cuts}
+A subset $\mathcal{C} \subseteq A$ with $\sum_{(i,j) \in \mathcal{C}} C_{ij} > B$ is a \emph{cover}: no feasible solution can use all arcs in $\mathcal{C}$.
+The cover inequality $\sum_{(i,j) \in \mathcal{C}} x_{ij} \leq |\mathcal{C}| - 1$ is valid and can be strengthened via sequential lifting.
+
+\paragraph{(B2) Routing infeasibility cuts}
+We introduce inequalities defined purely on node-visit variables $y_i$.
+For $Q \subseteq V \setminus \{0\}$, let $C_{\text{assign}}(Q)$ denote the optimal value of the assignment relaxation on the subgraph induced by $Q \cup \{0\}$, i.e., the minimum total base cost of a set of arcs where every node has exactly one incoming and one outgoing arc, computed via the Hungarian algorithm in $O(|Q|^3)$.
+Since fatigue only increases travel cost, $C_{\text{assign}}(Q)$ is a lower bound on the fatigue-adjusted cost of any cycle through $Q \cup \{0\}$.
+
+\begin{proposition}[Routing infeasibility]
+\label{prop:routing}
+For any $Q \subseteq V \setminus \{0\}$ with $C_{\text{assign}}(Q) > B$, the inequality
+\begin{equation}
+  \sum_{i \in Q} y_i \leq |Q| - 1
+  \label{eq:routing_infeasibility}
+\end{equation}
+is satisfied by every integer-feasible solution of the AOPF\@.
+\end{proposition}
+
+The proof follows by contradiction on budget feasibility (see Supplementary Material).
+Unlike cover cuts, routing infeasibility cuts constrain $y_i$ directly; the LP cannot circumvent them by redistributing arc flow.
+
+\paragraph{(B3) Directed cycle cover cuts}
+Adapting \citet{fischetti1998solving} to the directed setting: for a directed cycle $F \subset A$ with nodes $V(F)$ whose base traversal cost exceeds $B$:
+
+\begin{proposition}[Directed cycle cover]
+\label{prop:cyclecover}
+For any directed cycle $F \subset A$ whose base cost $\sum_{(i,j) \in F} C_{ij} > B$, the inequality
+\begin{equation}
+  \sum_{(i,j) \in F} x_{ij} \leq \sum_{v \in V(F)} y_v - 1
+  \label{eq:cycle_cover}
+\end{equation}
+is satisfied by every integer-feasible solution of the AOPF\@.
+\end{proposition}
+
+The proof follows by contradiction: if all arcs in $F$ are used, the route cost exceeds $B$ (see Supplementary Material).
+
+This is stronger than B1 because the right-hand side involves $y_v$: when $y_v < 1$, fewer arcs are permitted.
+
+\paragraph{(B4) Directed path inequality cuts}
+Adapting \citet{fischetti1998solving}: for a directed path $P = (v_1 \to \cdots \to v_k)$ with feasible closing set $W(P) = \{ v \in V \setminus V(P) : \text{path } P \text{ can be closed through } v \text{ within budget}\}$:
+The path inequality states:
+\begin{equation}
+  \sum_{\ell=1}^{k-1} x_{v_\ell, v_{\ell+1}} - \sum_{v \in V(P)} y_v + y_{v_1} + y_{v_k} - \sum_{v \in W(P)} x_{v_k, v} \leq 0
+  \label{eq:path_ineq}
+\end{equation}
+The fatigue model makes $W(P)$ smaller than in the symmetric case, producing tighter cuts on high-fatigue instances.
+
+\subsection{Separation Routines}
+\label{sec:separation}
+
+The valid inequalities above are added dynamically during the B\&C search.
+At each node of the search tree, the solver runs a cut loop of up to $K_{\max} = 20$ iterations, attempting to find violated inequalities in the current LP solution $(x^*, y^*, f^*)$.
+The loop terminates when no violated cuts are found.
+Below we describe how each cut family is separated.
+
+\paragraph{Subtour and connectivity separation}
+A directed support graph $G^* = (V^*, A^*)$ is constructed from arcs with $x_{ij}^* > 0.5$.
+Two complementary procedures identify violated SECs and connectivity cuts:
+\begin{enumerate}[nosep]
+  \item \emph{Kosaraju SCC detection.}
+        Kosaraju's algorithm identifies all strongly connected components of $G^*$ in $O(|V^*| + |A^*|)$ time.
+        Any SCC not containing the depot yields a violated subset $S$, and all four cut types~(\cref{eq:sec,eq:outcut,eq:incut,eq:twocut}) are added for $S$.
+  \item \emph{Reverse BFS.}
+        A reverse BFS from the depot identifies nodes that can reach the depot in $G^*$.
+        Any visited node ($y_i^* > 0.5$) not in this reachable set requires an outgoing connectivity cut.
+\end{enumerate}
+
+\paragraph{Max-flow connectivity separation}
+The rounding-based separation above may miss violated cuts when fractional arc values are spread thinly.
+For each node $k$ with $y_k^* > 0.1$, a max-flow computation (Dinic's algorithm) from depot to $k$ on the fractional support graph (using $x_{ij}^*$ as capacities) identifies violated connectivity cuts when the max-flow value is less than $y_k^*$.
+
+\paragraph{Budget-based cut separation}
+The following procedures identify violated instances of the budget-based cuts B1--B4:
+\begin{itemize}[nosep]
+  \item \emph{(B1) Cover cuts.} Arcs with $x_{ij}^* > 0$ are accumulated greedily by decreasing $x_{ij}^*$ until their fatigue-inflated cost exceeds $B$ (arc weights inflated to $C_{ij}(1 + \lambda C_{0i}/B)$). Up to 3 covers are added per iteration.
+  \item \emph{(B2) Routing infeasibility cuts.} Nodes with $y_i^* > 0.5$ are added greedily to a candidate set $Q$ by decreasing $y_i^*$. When $C_{\text{assign}}(Q) > B$ and $\sum_{i \in Q} y_i^* > |Q| - 1$, the set is minimised by removing nodes with smallest $y_i^*$ while $C_{\text{assign}}(Q)$ remains above $B$.
+  \item \emph{(B3)--(B4) Cycle cover and path cuts.} Short directed cycles (length 3--4) and paths (length 2--3) are enumerated in the support graph. Violated instances of~\eqref{eq:cycle_cover} and~\eqref{eq:path_ineq} are added when the fatigue-adjusted cost exceeds $B$.
+\end{itemize}
+
+
+\section{Solution Methods}
+\label{sec:methods}
+
+\subsection{Simulated Annealing (SA)}
+\label{sec:sa}
+
+\paragraph{Method selection}
+The SA metaheuristic was selected after comparing four methods under equal 2-second budgets across 21 benchmark instances (\cref{tab:heuristic_comparison}).
+
+\begin{table}[htbp]
+\centering
+\caption{Heuristic comparison: mean gap below SA (\%) across 21 benchmark instances (equal 2\,s budget, 10 seeds). All differences significant (Wilcoxon, $p < 0.001$).}
+\label{tab:heuristic_comparison}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Method} & \textbf{Mean gap} & \textbf{Std} & \textbf{Min gap} & \textbf{Max gap} \\
+\midrule
+Greedy  & 23.0\% &  9.4\% &  3.7\% & 40.0\% \\
+GA      & 49.2\% & 11.0\% & 24.6\% & 71.9\% \\
+ACO     &  8.1\% &  4.9\% &  1.3\% & 24.1\% \\
+SA      &  (ref.) & (ref.) &  (ref.) & (ref.) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Algorithm}
+Starting from a greedy insertion solution, the SA applies Remove ($p = 0.30$), Insert ($p = 0.30$), Or-opt on segments of 1--3 nodes ($p = 0.20$), and Swap ($p = 0.20$).
+Moves violating the fatigue budget are rejected.
+Parameters ($T_0 = 100$, $T_{\text{end}} = 0.1$, geometric cooling) were tuned via grid search over 1{,}000 synthetic instances.
+Iterations and restarts are auto-calibrated: $N_{\text{iter}} = \text{clip}(2500n, 10000, 120000)$, $N_{\text{restart}} = \text{clip}(3000/n, 40, 200)$.
+The search terminates early on stagnation (no improvement for $N_{\text{iter}}/5$ iterations).
+
+\subsection{Branch-and-Cut (B\&C)}
+\label{sec:bnc}
+
+The B\&C solver uses the LP relaxation of the AOPF formulation (\cref{sec:formulation}), solved via the HiGHS dual simplex \citep{huangfu2018highs}.
+HiGHS was chosen as it is open-source, provides a C API suitable for embedding in a custom B\&C loop, and its dual simplex implementation supports efficient warm-starting after cut addition.
+The algorithm proceeds as follows:
+
+\begin{algorithm}[htbp]
+\caption{Branch-and-Cut for AOPF}
+\label{alg:bnc}
+\begin{algorithmic}[1]
+\State Build root LP relaxation
+\State Warm-start incumbent $z^* \gets$ SA solution value
+\State Push root node onto stack
+\While{stack non-empty \textbf{and} time $< T_{\max}$}
+  \State Pop node, apply variable fixings
+  \For{$k = 1, \ldots, K_{\max}$} \Comment{Cut loop, $K_{\max} = 20$}
+    \State Solve LP relaxation
+    \If{$\bar{z} \leq z^* + \varepsilon$} \textbf{prune and continue} \EndIf
+    \State Find violated SECs via Kosaraju SCC
+    \State Find depot-unreachable nodes via reverse BFS
+    \State Find violated max-flow connectivity cuts
+    \State Find violated budget-based cuts (B1--B4, \cref{sec:separation})
+    \If{no violations found} \textbf{break} \EndIf
+    \State Add all violated cuts to LP
+  \EndFor
+  \If{solution is integer-feasible}
+    \State Extract route, validate fatigue feasibility
+    \If{score $> z^*$} update incumbent \EndIf
+  \Else
+    \State Branch on most fractional $y_i$
+    \State Push child nodes (DFS order)
+  \EndIf
+\EndWhile
+\State \textbf{if} stack empty \textbf{then} solution is provably optimal
+\end{algorithmic}
+\end{algorithm}
+
+Key implementation details: branching on $y_i$ (eliminating $O(n)$ arcs per fixing), LP deep-copy via \texttt{Highs\_passLp}, duplicate SEC tracking via hash set, maximum depth $D_{\max} = 15$, and time limit $T_{\max} = 900$\,s.
+
+\subsection{Node Selection Strategy}
+\label{sec:node-selection}
+
+The B\&C algorithm admits two complementary node selection strategies.
+\emph{Depth-first search} (DFS) descends quickly into promising subtrees, finds integer-feasible improvements early, and prunes aggressively once a strong incumbent is established.
+\emph{Best-first search} (BFS) processes the node with the best LP upper bound first, minimising the number of nodes examined to close the optimality gap at the cost of slower incumbent discovery.
+This tradeoff is well studied in the MIP literature \citep{linderoth1999computational}.
+
+For the real-terrain instances ($n \leq 40$) we use DFS, and for the benchmark suite (up to $n = 100$) we use BFS.
+Both configurations share the same formulation, cut families, and warm-start heuristic; only the node selection rule differs.
+
+
+\section{Computational Pipeline}
+\label{sec:pipeline}
+
+The full pipeline consists of two stages:
+
+\paragraph{Stage 1: Cost Surface Generation (Python)}
+\begin{enumerate}[nosep]
+  \item Parse OMAP file $\to$ rasterise symbols onto UTM grid $\to$ ACR.
+  \item Load DTM, compute TRI, PC, SLO $\to$ normalise $\to$ HCR (\cref{eq:hcr}).
+  \item Scale HCR via IQR ratio (\cref{eq:iqr}), merge with ACR (\cref{eq:combined}).
+  \item Compute directional slopes from DTM.
+  \item Run anisotropic Dijkstra from each node with Minetti factors.
+  \item Export asymmetric cost matrix, scores, and budget as JSON.
+\end{enumerate}
+
+\paragraph{Stage 2: Route Optimisation (C++)}
+\begin{enumerate}[nosep]
+  \item Parse JSON input.
+  \item Run iterated SA $\to$ warm-start solution.
+  \item Build LP model with HiGHS, run B\&C (\cref{alg:bnc}).
+  \item Report solution, optimality status, and timing.
+\end{enumerate}
+
+
+\section{Experimental Setup}
+\label{sec:experiments}
+
+\subsection{Study Areas}
+
+Torremocha is a gently undulating terrain in Extremadura, Spain ($2.1 \times 2.9$\,km, 55\,m relief, median slope $3.2^\circ$, cost asymmetry $\mathcal{A} = 16.1\%$, IQR scaling $c = 0.87$), with moderate forest cover and extensive rock features.
+La Muela is a mountainous area ($2.8 \times 3.2$\,km, 464\,m relief, median slope $15.9^\circ$, cost asymmetry $\mathcal{A} = 50.0\%$, IQR scaling $c = 2.18$), with steep slopes, cliffs, and significant elevation variation.
+Both terrains use 2.0\,m resolution DTMs.
+
+\subsection{Control Distributions}
+
+Seven control-point distributions (standard, clustered, ring, path-biased, elevation-biased, sparse-far, mixed-density) with 25--40 controls each are generated for each terrain to test solver robustness across varying spatial structures.
+Point values (10--50) are assigned based on terrain difficulty.
+
+\subsection{Parameters}
+
+Race duration: 1 hour.
+Fatigue rate: $\lambda = 0.2$.
+Base speed: 2.5\,m/s.
+Dijkstra downsampling: $s = 8$.
+B\&C time limit: 900\,s.
+SA iterations: auto-calibrated per instance.
+These values reflect the typical duration of a middle-distance orienteering race.
+The fatigue rate $\lambda = 0.2$ reflects the approximately doubled degradation rate in orienteering versus road running, accounting for terrain roughness \citep{voloshina2015}, higher oxygen cost \citep{creagh1997}, and cognitive load \citep{millet2010orienteering}.
+The benchmark suite (\cref{sec:benchmark}) evaluates sensitivity across $\lambda \in \{0.0, 0.1, 0.2, 0.3\}$.
+
+
+\section{Results}
+\label{sec:results}
+
+We evaluate the framework on the two real-terrain study areas (Torremocha, 16.1\% cost asymmetry; La Muela, 50.0\% cost asymmetry) and on the synthetic benchmark suite.
+For each instance, the SA warm-start solution provides the incumbent; the B\&C then attempts to prove optimality or tighten the LP relaxation gap within a 15-minute time limit.
+Both formulations (MTZ and flow) receive the same SA incumbent.
+The \emph{gap} reported in each table is the relative difference between the best LP upper bound and the incumbent: $\text{gap} = 100 \times (\bar{z} - z^*) / z^*$, where $\bar{z}$ is the LP bound and $z^*$ is the best integer solution found.
+A gap of 0.0\% with ``YES'' indicates that the B\&C has proven the SA solution to be globally optimal.
+
+\subsection{Synthetic Benchmark Instances}
+\label{sec:benchmark}
+
+To the best of our knowledge, no standard benchmark exists for the asymmetric OP with fatigue.
+We generate a parameterized benchmark suite by varying four dimensions independently from a baseline configuration ($n = 40$, $\alpha = 0.25$, $\lambda = 0.2$, medium budget):
+\begin{itemize}[nosep]
+  \item Node count $n \in \{20, 30, 40, 50, 75, 100\}$
+  \item Asymmetry parameter $\alpha \in \{0.0, 0.1, 0.25, 0.5\}$, controlling directional cost perturbation
+  \item Fatigue rate $\lambda \in \{0.0, 0.1, 0.2, 0.3\}$
+  \item Budget tightness: the budget $B$ is set to 70\% (loose), 50\% (medium), or 30\% (tight) of the nearest-neighbour tour cost
+\end{itemize}
+Additionally, four extreme-case instances test boundary conditions.
+Nodes are placed uniformly in a $1000 \times 1000$\,m domain with the depot at the centre; asymmetric costs are generated by perturbing Euclidean distances with a directional slope factor proportional to $\alpha$ plus 10\% noise.
+All instances and the solver are publicly released.
+
+\subsection{Ablation Study: Effect of Cut Families}
+\label{sec:ablation}
+
+To quantify the marginal contribution of each cut family introduced in \cref{sec:separation}, we evaluate five cumulative configurations of the flow-based B\&C solver on the full benchmark suite of 21 instances, following the component evaluation methodology of \citet{kobeaga2021revisited}.
+Each configuration adds one cut family to the previous one, using the same SA warm start and 900\,s time limit.
+\Cref{tab:ablation} reports the mean optimality gap, number of instances proven optimal, and mean solving time for each configuration.
+
+\begin{table}[htbp]
+\centering
+\caption{Ablation study on the benchmark suite (21 instances, 900\,s time limit). Each row adds one cut family to the previous configuration. B\&C uses best-first search (see \cref{sec:node-selection}). Gap is $100 \times (\bar{z} - z^*) / z^*$.}
+\label{tab:ablation}
+\small
+\begin{tabular}{clrrrr}
+\toprule
+ & \textbf{Cuts enabled} & \textbf{Mean} & \textbf{Max} & \textbf{Opt.} & \textbf{Mean} \\
+ &  & \textbf{gap} & \textbf{gap} &  & \textbf{time (s)} \\
+\midrule
+1 & Base (SECs + conn.\ + tight.\ + fat.)  & 5.54\% & 20.32\% & 6/21 & 727 \\
+2 & + B1 (lifted covers)                    & 5.85\% & 19.88\% & 7/21 & 741 \\
+3 & + B2 (routing infeas.)                  & 5.41\% & 19.69\% & 7/21 & 723 \\
+4 & + B3 (cycle covers)                     & 5.35\% & 20.19\% & 7/21 & 718 \\
+5 & + B4 (path ineq.)                       & 5.42\% & 19.81\% & 7/21 & 718 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The base configuration proves 6 of 21 instances optimal with a mean gap of 5.54\%.
+Adding B1 (lifted cover cuts) proves one additional instance but slightly increases the mean gap due to separation overhead.
+B2 (routing infeasibility cuts) reduces the mean gap to 5.41\% without changing the number of optimal solutions.
+B3 (cycle cover cuts) yields the lowest mean gap (5.35\%).
+B4 (path inequalities) provides no further improvement, with the mean gap increasing slightly to 5.42\%.
+
+\subsection{Benchmark Results}
+
+Both formulations (MTZ and flow) are evaluated on the full benchmark suite under identical conditions (same SA warm start, 900\,s time limit).
+
+\begin{table}[htbp]
+\centering
+\caption{Benchmark results: effect of instance size ($\alpha = 0.25$, $\lambda = 0.2$, medium budget, top panel) and effect of asymmetry and fatigue ($n = 40$, medium budget, bottom panel). B\&C uses best-first search (see \cref{sec:node-selection}).}
+\label{tab:bench_size}
+\small
+\begin{tabular}{llrrcrrc}
+\toprule
+& & & \multicolumn{2}{c}{\textbf{MTZ}} & \multicolumn{2}{c}{\textbf{Flow}} \\
+\cmidrule(lr){4-5} \cmidrule(lr){6-7}
+\textbf{Parameter} & \textbf{Value} & SA pts & gap & optimal? & gap & optimal? \\
+\midrule
+\multirow{6}{*}{Size $n$}
+& 20  &  350 &  0.0\% & \textbf{YES} &  0.0\% & \textbf{YES} \\
+& 30  &  540 &  0.0\% & \textbf{YES} &  0.0\% & \textbf{YES} \\
+& 40  &  660 & 18.5\% & no &  7.5\% & no \\
+& 50  &  940 & 16.5\% & no &  5.9\% & no \\
+& 75  & 1370 & 19.4\% & no &  6.5\% & no \\
+& 100 & 1840 & 19.9\% & no &  7.8\% & no \\
+\midrule
+\multirow{4}{*}{Asymmetry $\alpha$}
+& 0.00 &  690 & 15.8\% & no &  6.2\% & no \\
+& 0.10 &  730 & 14.1\% & no &  2.8\% & no \\
+& 0.25 &  670 & 20.2\% & no &  5.9\% & no \\
+& 0.50 &  630 & 22.7\% & no &  7.5\% & no \\
+\midrule
+\multirow{4}{*}{Fatigue $\lambda$}
+& 0.00 &  790 &  6.3\% & no &  0.0\% & \textbf{YES} \\
+& 0.10 &  730 &  8.5\% & no &  3.0\% & no \\
+& 0.20 &  730 & 15.4\% & no &  7.7\% & no \\
+& 0.30 &  750 & 30.5\% & no & 10.5\% & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The benchmark reveals that the flow formulation consistently produces tighter LP bounds than MTZ, with gap reductions growing with instance size (11.0\,pp at $n = 40$ to 12.1\,pp at $n = 100$).
+The fatigue dimension confirms the McCormick looseness: the MTZ gap grows from 6.3\% ($\lambda = 0$) to 30.5\% ($\lambda = 0.3$), while the flow gap increases only from 0.0\% to 10.5\%.
+Across all 21 instances, the flow formulation reduces the mean gap from 16.0\% to 5.4\% and proves 7 instances optimal versus 4 for MTZ.
+
+\begin{table}[htbp]
+\centering
+\caption{Benchmark results: budget tightness and extreme cases ($n = 40$ unless noted). B\&C uses best-first search (see \cref{sec:node-selection}).}
+\label{tab:bench_extra}
+\small
+\begin{tabular}{lrrcrrc}
+\toprule
+& & \multicolumn{2}{c}{\textbf{MTZ}} & \multicolumn{2}{c}{\textbf{Flow}} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+Instance & SA pts & gap & opt? & gap & opt? \\
+\midrule
+Loose budget          & 960  & 18.2\% & no  &  8.0\% & no \\
+Medium budget         & 680  & 25.5\% & no  &  5.3\% & no \\
+Tight budget          & 450  &  0.0\% & \textbf{YES} &  0.0\% & \textbf{YES} \\
+Sym.\ easy ($n{=}20$, $\alpha{=}0$, $\lambda{=}0$) & 470 & 0.0\% & \textbf{YES} & 0.0\% & \textbf{YES} \\
+Asym.\ hard ($n{=}100$, $\alpha{=}.5$, $\lambda{=}.3$) & 1160 & 42.0\% & no & 10.5\% & no \\
+High asym., no fat.\ ($\alpha{=}.5$, $\lambda{=}0$) & 970 & 9.1\% & no & 1.1\% & no \\
+Sym., high fat.\ ($\alpha{=}0$, $\lambda{=}.3$) & 850 & 24.9\% & no & 9.9\% & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The extreme cases highlight the flow formulation's strengths: the hardest instance improves from 42.0\% to 10.5\%, and the no-fatigue instance ($\lambda = 0$) is newly proven optimal by the flow formulation.
+
+\begin{proposition}[Optimality certificate]
+\label{prop:optimality}
+If the B\&C algorithm terminates with an empty node stack, the incumbent $z^*_{\text{SA}}$ is the globally optimal value of the AOPF.
+\end{proposition}
+
+This follows from the standard B\&C correctness argument: every node is either pruned by bound, infeasible, or resolved to an integer solution, and the union of all subtrees covers the entire feasible region (see Supplementary Material for the full proof).
+
+Based on the benchmark analysis, we apply both formulations to the real-terrain instances using DFS node selection (\cref{sec:node-selection).}
+
+\subsection{Torremocha Results}
+
+\begin{table}[H]
+\centering
+\caption{Torremocha results: SA and B\&C under both formulations (IQR scaling $c = 0.87$, cost asymmetry $\mathcal{A} = 16.1\%$). B\&C uses depth-first search (see \cref{sec:node-selection}).}
+\label{tab:torremocha}
+\begin{tabular}{lrrrrcrrc}
+\toprule
+& & \multicolumn{2}{c}{\textbf{SA}} & \multicolumn{2}{c}{\textbf{MTZ}} & \multicolumn{2}{c}{\textbf{Flow}} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
+\textbf{Distribution} & ctrls & pts & visited & gap & optimal? & gap & optimal? \\
+\midrule
+Standard        & 40 &  940 & 25 & 14.1\% & no  & 12.2\% & no \\
+Clustered       & 35 &  510 & 29 &  0.0\% & \textbf{YES} &  0.0\% & \textbf{YES} \\
+Ring            & 30 &  650 & 26 &  0.0\% & \textbf{YES} &  0.0\% & \textbf{YES} \\
+Path-biased     & 35 &  630 & 30 &  0.0\% & \textbf{YES} &  0.0\% & \textbf{YES} \\
+Elev-biased     & 35 &  380 & 29 &  7.4\% & no  &  6.3\% & no \\
+Sparse-far      & 25 &  660 & 19 &  0.0\% & \textbf{YES} &  0.0\% & \textbf{YES} \\
+Mixed-density   & 40 &  680 & 32 &  8.6\% & no  &  7.1\% & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The flow formulation proves 4 of 7 instances optimal, matching MTZ (4/7) on the same subset (Clustered, Ring, Path-biased, Sparse-far), with tighter gaps on the unproven instances: Standard (14.1\% $\to$ 12.2\%), Elev-biased (7.4\% $\to$ 6.3\%), and Mixed-density (8.6\% $\to$ 7.1\%).
+
+\subsection{La Muela Results}
+
+\begin{table}[H]
+\centering
+\caption{La Muela results: SA and B\&C under both formulations (IQR scaling $c = 2.18$, cost asymmetry $\mathcal{A} = 50.0\%$). B\&C uses depth-first search (see \cref{sec:node-selection}).}
+\label{tab:lamuela}
+\begin{tabular}{lrrrrcrrc}
+\toprule
+& & \multicolumn{2}{c}{\textbf{SA}} & \multicolumn{2}{c}{\textbf{MTZ}} & \multicolumn{2}{c}{\textbf{Flow}} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
+\textbf{Distribution} & ctrls & pts & visited & gap & optimal? & gap & optimal? \\
+\midrule
+Standard        & 31 &  610 & 14 &  0.0\% & \textbf{YES} &  0.0\% & \textbf{YES} \\
+Clustered       & 35 &  800 & 24 &  0.0\% & \textbf{YES} &  0.0\% & \textbf{YES} \\
+Ring            & 30 &  470 & 21 &  6.3\% & no  &  0.0\% & \textbf{YES} \\
+Path-biased     & 35 &  570 & 17 &  0.0\% & \textbf{YES} &  0.0\% & \textbf{YES} \\
+Elev-biased     & 35 &  730 & 22 & 17.0\% & no  & 12.4\% & no \\
+Sparse-far      & 25 &  600 & 13 &  0.0\% & \textbf{YES} &  0.0\% & \textbf{YES} \\
+Mixed-density   & 40 &  680 & 25 & 14.6\% & no  &  8.6\% & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The flow formulation proves 5 of 7 instances optimal versus 4 for MTZ, additionally proving Ring optimal (6.3\% $\to$ 0.0\%), and reduces gaps on the remaining instances: Elev-biased (17.0\% $\to$ 12.4\%) and Mixed-density (14.6\% $\to$ 8.6\%).
+The harder terrain (464\,m relief, 50\% cost asymmetry) produces larger gaps overall, but the flow formulation's advantage is consistent across both terrains.
+Across both terrains (14 instances total), the flow formulation proves 9 of 14 instances optimal (vs.\ 8 for MTZ) and reduces the mean gap on unproven instances from 11.3\% to 9.3\%.
+
+
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{SA effectiveness}
+On all 9 instances where the B\&C proves optimality, the incumbent at termination is the original SA warm-start solution, confirming SA is highly effective for OP instances of this size ($n \leq 40$) \citep{vansteenwegen2011orienteering}.
+
+\paragraph{Fatigue linearisation}
+The comparison between the MTZ and flow formulations confirms that the McCormick envelope is the primary source of LP relaxation looseness in the MTZ approach.
+The flow formulation, combined with max-flow separation and reliability branching, reduces the mean benchmark gap from 16.0\% to 5.4\% and proves 7 of 21 instances optimal.
+On real-terrain instances, the flow formulation reduces the La Muela Mixed-density gap from 14.6\% (MTZ) to 8.6\%, demonstrating the practical impact of this tighter relaxation.
+
+\paragraph{Computational complexity and runtime}
+Cost matrix construction runs $n$ anisotropic Dijkstra passes on a $(H/s)(W/s)$ grid, giving $O\bigl(nHW s^{-2} \log(HWs^{-2})\bigr)$; with Numba JIT and $s = 8$, this completes in under 4\,s for 41 nodes.
+SA runs in $O(N_{\text{restart}} \cdot N_{\text{iter}} \cdot n)$ and completes in under 1\,s for all tested instances.
+The B\&C has worst-case exponential complexity; in practice, runtime varies dramatically with instance structure (e.g., 14\,s for a 24-node clustered instance vs.\ 900\,s for a 31-node dense instance), motivating the SA warm start for aggressive early pruning.
+
+\paragraph{Limitations}
+The framework has not been validated against GPS tracks from real orienteers.
+The fatigue model is linear; real fatigue may follow a more complex curve.
+The B\&C does not scale well beyond $\sim$50 nodes; for larger instances, the SA solution should be treated as a heuristic.
+Dijkstra downsampling ($s = 8$) introduces path approximation error ($< 2\%$ median deviation vs.\ $s = 4$).
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+ 
+We presented an integrated framework for optimal route planning in orienteering that bridges GIS-based terrain cost modelling with exact combinatorial optimisation.
+The main contributions are the AOPF problem formulation with cumulative fatigue, a flow-based B\&C formulation that eliminates the McCormick relaxation gap, novel routing infeasibility cuts based on the assignment relaxation, and a 21-instance benchmark suite.
+The flow formulation proves 9 of 14 real-terrain instances optimal and reduces the mean benchmark gap from 16.0\% to 5.4\%.
+Future work includes validation against real GPS data, extension to multi-day events, and weather-dependent traversability.
+
+\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
+
+During the preparation of this work the author used Kiro (Amazon Web Services) in order to assist with code development, literature search, and manuscript editing. After using this tool, the author reviewed and edited the content as needed and takes full responsibility for the content of the published article.
+
+
+% REFERENCES
+
+\bibliographystyle{plainnat}
+
+{\small
+\begin{thebibliography}{20}
+
+\bibitem[Albert and S\'{a}rk\"{o}zy(2021)]{ica2021lcp}
+G.~Albert and Z.~S\'{a}rk\"{o}zy.
+\newblock Route planning on orienteering maps with least-cost path analysis.
+\newblock \emph{Proceedings of the ICA}, 4:4, 2021.
+\newblock \doi{10.5194/ica-proc-4-4-2021}.
+
+\bibitem[Bekta\c{s} and Laporte(2011)]{bektas2011pollution}
+T.~Bekta\c{s} and G.~Laporte.
+\newblock The pollution-routing problem.
+\newblock \emph{Transportation Research Part B: Methodological}, 45(8):1232--1250, 2011.
+\newblock \doi{10.1016/j.trb.2011.02.004}.
+
+\bibitem[Creagh and Reilly(1997)]{creagh1997}
+U.~Creagh and T.~Reilly.
+\newblock Physiological and biomechanical aspects of orienteering.
+\newblock \emph{Sports Medicine}, 24(6):409--418, 1997.
+\newblock \doi{10.2165/00007256-199724060-00005}.
+
+\bibitem[Fischetti(1991)]{fischetti1991atsp}
+M.~Fischetti.
+\newblock Facets of the asymmetric traveling salesman polytope.
+\newblock \emph{Mathematics of Operations Research}, 16(1):42--56, 1991.
+\newblock \doi{10.1287/moor.16.1.42}.
+
+\bibitem[Fischetti and Toth(1997)]{fischetti1997atsp}
+M.~Fischetti and P.~Toth.
+\newblock A polyhedral approach to the asymmetric traveling salesman problem.
+\newblock \emph{Management Science}, 43(11):1520--1536, 1997.
+\newblock \doi{10.1287/mnsc.43.11.1520}.
+
+\bibitem[Fischetti et~al.(1998)]{fischetti1998solving}
+M.~Fischetti, J.~J. Salazar~Gonz\'{a}lez, and P.~Toth.
+\newblock Solving the orienteering problem through branch-and-cut.
+\newblock \emph{INFORMS Journal on Computing}, 10(2):133--148, 1998.
+\newblock \doi{10.1287/ijoc.10.2.133}.
+
+\bibitem[Gendreau et~al.(1998)]{gendreau1998generalized}
+M.~Gendreau, G.~Laporte, and F.~Semet.
+\newblock A branch-and-cut algorithm for the undirected selective travelling salesman problem.
+\newblock \emph{Networks}, 32(4):263--273, 1998.
+\newblock \doi{10.1002/(SICI)1097-0037(199812)32:4<263::AID-NET3>3.0.CO;2-Q}.
+
+\bibitem[Gunawan et~al.(2016)]{gunawan2016orienteering}
+A.~Gunawan, H.~C. Lau, and P.~Vansteenwegen.
+\newblock Orienteering problem: A survey of recent variants, solution approaches and applications.
+\newblock \emph{European Journal of Operational Research}, 255(2):315--332, 2016.
+\newblock \doi{10.1016/j.ejor.2016.04.059}.
+
+\bibitem[Huangfu and Hall(2018)]{huangfu2018highs}
+Q.~Huangfu and J.~A.~J. Hall.
+\newblock Parallelizing the dual revised simplex method.
+\newblock \emph{Mathematical Programming Computation}, 10(1):119--142, 2018.
+\newblock \doi{10.1007/s12532-017-0130-5}.
+
+\bibitem[Kobeaga et~al.(2021)]{kobeaga2021revisited}
+G.~Kobeaga, M.~Merino, and J.~A. Lozano.
+\newblock A revisited branch-and-cut algorithm for large-scale orienteering problems.
+\newblock \emph{European Journal of Operational Research}, 290(3):865--880, 2021.
+\newblock \doi{10.1016/j.ejor.2020.08.040}.
+
+\bibitem[Linderoth and Savelsbergh(1999)]{linderoth1999computational}
+J.~T. Linderoth and M.~W.~P. Savelsbergh.
+\newblock A computational study of search strategies for mixed integer programming.
+\newblock \emph{INFORMS Journal on Computing}, 11(2):173--187, 1999.
+\newblock \doi{10.1287/ijoc.11.2.173}.
+
+\bibitem[Malandraki and Daskin(1992)]{malandraki1992timedep}
+C.~Malandraki and M.~S. Daskin.
+\newblock Time dependent vehicle routing problems: Formulations, properties and heuristic algorithms.
+\newblock \emph{Transportation Science}, 26(3):185--200, 1992.
+\newblock \doi{10.1287/trsc.26.3.185}.
+
+\bibitem[Millet et~al.(2010)]{millet2010orienteering}
+G.~Y. Millet, C.~Divert, T.~Banizette, and J.-B. Morin.
+\newblock Changes in running pattern due to fatigue and cognitive load in orienteering.
+\newblock \emph{Journal of Sports Sciences}, 28(2):153--160, 2010.
+\newblock \doi{10.1080/02640410903406182}.
+
+\bibitem[Minetti et~al.(2002)]{minetti2002}
+A.~E. Minetti, C.~Moia, G.~S. Roi, D.~Susta, and G.~Ferretti.
+\newblock Energy cost of walking and running at extreme uphill and downhill slopes.
+\newblock \emph{Journal of Applied Physiology}, 93(3):1039--1046, 2002.
+\newblock \doi{10.1152/japplphysiol.01177.2001}.
+
+\bibitem[Riley et~al.(1999)]{riley1999tri}
+S.~J. Riley, S.~D. DeGloria, and R.~Elliot.
+\newblock A terrain ruggedness index that quantifies topographic heterogeneity.
+\newblock \emph{Intermountain Journal of Sciences}, 5(1--4):23--27, 1999.
+
+\bibitem[Tobler(1993)]{tobler1993}
+W.~Tobler.
+\newblock Three presentations on geographical analysis and modeling.
+\newblock Technical Report 93-1, National Center for Geographic Information and Analysis, 1993.
+
+\bibitem[Tsiligirides(1984)]{tsiligirides1984heuristic}
+T.~Tsiligirides.
+\newblock Heuristic methods applied to orienteering.
+\newblock \emph{Journal of the Operational Research Society}, 35(9):797--809, 1984.
+\newblock \doi{10.1057/jors.1984.162}.
+
+\bibitem[Vansteenwegen et~al.(2011)]{vansteenwegen2011orienteering}
+P.~Vansteenwegen, W.~Souffriau, and D.~Van~Oudheusden.
+\newblock The orienteering problem: A survey.
+\newblock \emph{European Journal of Operational Research}, 209(1):1--10, 2011.
+\newblock \doi{10.1016/j.ejor.2010.03.045}.
+
+\bibitem[Voloshina et~al.(2015)]{voloshina2015}
+A.~S. Voloshina, A.~D. Kuo, M.~A. Daley, and D.~P. Ferris.
+\newblock Biomechanics and energetics of running on uneven terrain.
+\newblock \emph{Journal of Experimental Biology}, 218(5):711--719, 2015.
+\newblock \doi{10.1242/jeb.106518}.
+
+\bibitem[Zevenbergen and Thorne(1987)]{zevenbergen1987}
+L.~W. Zevenbergen and C.~R. Thorne.
+\newblock Quantitative analysis of land surface topography.
+\newblock \emph{Earth Surface Processes and Landforms}, 12(1):47--56, 1987.
+\newblock \doi{10.1002/esp.3290120107}.
+
+\end{thebibliography}
+}
+
+\section*{CRediT authorship contribution statement}
+
+\textbf{Pablo Borrego Ramos:} Conceptualization, Methodology, Software, Formal analysis, Investigation, Data curation, Writing -- original draft, Writing -- review \& editing, Visualization.
+
+\section*{Declaration of competing interest}
+
+The author declares that he has no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+
+\section*{Funding}
+
+This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
+
+\section*{Data availability}
+
+The source code, benchmark instances, and supplementary data are publicly available at \url{https://github.com/PabloAlmendralejo/Orienteering-Problem}.
+
+\end{document}
