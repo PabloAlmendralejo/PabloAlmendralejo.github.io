@@ -151,6 +151,18 @@ img {
   margin-bottom: 0.25rem;
 }
 
+.project .proj-title a,
+.project .proj-title a:visited {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.project .proj-title a:hover,
+.project .proj-title a:focus {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
 .project .proj-desc {
   margin: 0.25rem 0;
 }
