@@ -142,6 +142,18 @@ img {
   border-bottom: 2px solid var(--color-accent);
 }
 
+/* Enlaces discretos (mismo color que el texto, sin subrayado) -------------- */
+a.subtle,
+a.subtle:visited {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+a.subtle:hover,
+a.subtle:focus {
+  color: var(--color-accent);
+}
+
 /* Contenido de inicio ------------------------------------------------------ */
 .profile-header {
   text-align: center;
