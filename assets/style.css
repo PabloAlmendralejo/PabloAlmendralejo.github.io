@@ -154,26 +154,21 @@ a.subtle:focus {
   color: var(--color-accent);
 }
 
+/* Banner de cabecera (Componente 3b) --------------------------------------- */
+.hero-banner {
+  width: 100vw;
+  margin-left: calc(50% - 50vw); /* full-bleed a pesar del padding del body */
+  height: 180px;
+  background-image: url("hero.jpg"); /* ruta relativa a style.css */
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
 /* Contenido de inicio ------------------------------------------------------ */
 .profile-header {
   text-align: center;
-  position: relative;
-  isolation: isolate;
   padding: 2rem 1rem;
-}
-
-/* Logo anterior como fondo sutil del hero (Componente 3b) */
-.profile-header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: url("favicon.png");  /* ruta relativa a style.css */
-  background-position: right 1rem center;
-  background-size: auto 64px;  /* tamaño nativo (64x64) para evitar desenfoque por escalado */
-  background-repeat: no-repeat;
-  opacity: 0.28;
-  border-radius: 8px;
 }
 
 .profile-photo {
@@ -268,6 +263,10 @@ a.subtle:focus {
   }
 
   h1 { font-size: 1.5rem; }
+
+  .hero-banner {
+    height: 130px;
+  }
 
   .site-header nav {
     gap: 1rem;
