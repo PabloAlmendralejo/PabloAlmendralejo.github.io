@@ -161,7 +161,7 @@ a.subtle:focus {
   aspect-ratio: 3 / 1;          /* franja achatada */
   height: auto;
   background-image: url("hero.jpg");
-  background-position: center;
+  background-position: center bottom; /* el recorte del cover se lleva la parte alta, nunca la baja */
   background-size: cover;
   background-repeat: no-repeat;
   border-radius: 8px;
