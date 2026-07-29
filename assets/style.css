@@ -169,10 +169,10 @@ a.subtle:focus {
   inset: 0;
   z-index: -1;
   background-image: url("favicon.png");  /* ruta relativa a style.css */
-  background-position: center;
-  background-size: contain;
+  background-position: right 1rem center;
+  background-size: auto 64px;  /* tamaño nativo (64x64) para evitar desenfoque por escalado */
   background-repeat: no-repeat;
-  opacity: 0.12;
+  opacity: 0.28;
   border-radius: 8px;
 }
 
