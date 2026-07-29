@@ -158,10 +158,10 @@ a.subtle:focus {
 .hero-banner {
   max-width: var(--max-width);  /* extendida: todo el ancho de la columna */
   margin: 2rem auto 0;
-  aspect-ratio: 13 / 5;         /* franja algo más alta que 3:1 */
+  aspect-ratio: 11 / 5;         /* un poco más alta otra vez */
   height: auto;
   background-image: url("hero.jpg");
-  background-position: center 60%; /* la altura extra muestra más parte baja de la foto */
+  background-position: center 45%; /* la altura extra muestra ahora más parte alta */
   background-size: cover;
   background-repeat: no-repeat;
   border-radius: 8px;
