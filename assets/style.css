@@ -158,10 +158,12 @@ a.subtle:focus {
 .hero-banner {
   width: 100vw;
   margin-left: calc(50% - 50vw); /* full-bleed a pesar del padding del body */
-  height: 180px;
+  aspect-ratio: 2 / 1; /* coincide con hero.jpg 1200x600 */
+  max-height: 340px; /* límite para que no domine en escritorio */
+  height: auto;
   background-image: url("hero.jpg"); /* ruta relativa a style.css */
   background-position: center;
-  background-size: cover;
+  background-size: contain; /* nunca recorta; letterbox si se alcanza el límite */
   background-repeat: no-repeat;
 }
 
@@ -263,10 +265,6 @@ a.subtle:focus {
   }
 
   h1 { font-size: 1.5rem; }
-
-  .hero-banner {
-    height: 130px;
-  }
 
   .site-header nav {
     gap: 1rem;
