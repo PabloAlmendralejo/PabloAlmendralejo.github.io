@@ -167,6 +167,15 @@ a.subtle:focus {
   border-radius: 8px;
 }
 
+/* Imagen de entrada de blog ------------------------------------------------ */
+.post-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem auto 0;
+  border-radius: 8px;
+}
+
 /* Contenido de inicio ------------------------------------------------------ */
 .profile-header {
   text-align: center;
