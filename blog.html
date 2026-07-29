@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blog · Pablo Borrego Ramos</title>
+  <meta name="description" content="Blog of Pablo Borrego Ramos: essays and humorous pseudo-academic pieces on mathematics and optimization.">
+  <link rel="icon" type="image/webp" href="assets/thistle.webp">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme');
+      if (t !== 'light')
+        document.documentElement.dataset.theme = 'dark';
+    })();
+    function toggleTheme() {
+      var r = document.documentElement;
+      if (r.dataset.theme === 'dark') { delete r.dataset.theme; localStorage.setItem('theme', 'light'); }
+      else { r.dataset.theme = 'dark'; localStorage.setItem('theme', 'dark'); }
+    }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <nav aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="research.html">Research</a>
+      <a href="projects.html">Projects</a>
+      <a href="blog.html" class="active">Blog</a>
+      <a href="cv.pdf" target="_blank" rel="noopener">CV</a>
+    </nav>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.1 22c-5.5 0-10-4.5-10-10 0-5 3.7-9.2 8.6-9.9.5-.1.9.4.7.9-.3.8-.5 1.7-.5 2.6 0 4.1 3.3 7.4 7.4 7.4.9 0 1.8-.2 2.6-.5.5-.2 1 .3.9.7-.8 5-4.9 8.8-9.7 8.8z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-15 1.5 3h-3L12 2zm0 20-1.5-3h3L12 22zM2 12l3-1.5v3L2 12zm20 0-3 1.5v-3L22 12zM4.2 5.6l3.2 1.1-2.1 2.1-1.1-3.2zm15.6 12.8-3.2-1.1 2.1-2.1 1.1 3.2zM5.6 19.8l1.1-3.2 2.1 2.1-3.2 1.1zM18.4 4.2l-1.1 3.2-2.1-2.1 3.2-1.1z"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <h1>Blog</h1>
+
+    <article class="publication">
+      <h2 class="pub-title">How much land does a man need?</h2>
+      <p class="pub-venue">July 2026</p>
+
+      <p>The optimization problem of perimeter-bounded land acquisition under biological kinetic constraints was first proposed by Lev N. Tolstoy in his foundational work (Tolstoy, 1886). Regrettably, the solution presented by this author was deeply flawed and mathematically inaccurate. A failure attributable not merely to the 19th-century absence of metabolic rate equations and fluid dynamics, but primarily to Tolstoy&rsquo;s catastrophic decision to send a literary protagonist to do a mathematician&rsquo;s job without so much as a pocket calculator.</p>
+
+      <p>In this article, we formulate the &ldquo;How Much Land Does a Man Need Given Certain Conditions&rdquo; (HMLDAMNGCC) problem. We calculate the maximum planar area a human subject can bound via a closed path (mathematically modeled as a simple closed Jordan curve) under strict zero-intake constraints (no food, no water) on an unpaved, natural earthy surface.</p>
+
+      <p>Under the biomechanical framework of Pandolf et al. (1977) and Tobler&rsquo;s (1993) hiking function, a 70&nbsp;kg male walking across unpaved soil with a terrain drag coefficient of <em>η</em> = 1.2 (Givoni &amp; Goldman, 1971) maintains an initial velocity <em>V</em><sub>0</sub> = 3.6&nbsp;km/h at a metabolic expenditure <em>M</em> ≈ 193.5&nbsp;W (~166.4&nbsp;kcal/h). Although hepatic and lipid reserves exceed 100,000&nbsp;kcal, continuous walking generates sweat and respiratory losses of <em>ṁ</em><sub>fluid</sub> ≈ 0.70&nbsp;L/h (ACSM / Sawka et al., 2007; Gagge et al., 1971). For a baseline Total Body Water of 42&nbsp;L (60% of 70&nbsp;kg) (Watson et al., 1980), losing ≥&nbsp;10% of total body mass in fluid (Δ<em>m</em><sub>critical</sub> = 7.0&nbsp;L) triggers fatal hypovolemic shock (Montain &amp; Coyle, 1992; Cheuvront et al., 2010), establishing <em>T</em><sub>fatal</sub> = 7.0&nbsp;L / 0.70&nbsp;L/h = 10.0&nbsp;hours. Modeling progressive dehydration velocity decay (<em>V</em>(<em>t</em>) = 3.6(1 − 0.05<em>t</em>)&nbsp;km/h) (Cheuvront &amp; Kenefick, 2014), integrating distance over 10&nbsp;hours yields <em>L</em> = ∫<sub>0</sub><sup>10</sup> <em>V</em>(<em>t</em>)&nbsp;d<em>t</em> = 27.0&nbsp;km. By the Isoperimetric Inequality (Blaschke, 1916; Osserman, 1978), the maximal enclosed planar area for a closed Jordan curve is achieved via a circle (<em>A</em> = <em>L</em>²/4π), yielding 58.01&nbsp;km² (14,334&nbsp;acres).</p>
+
+      <p>In contrast to Tolstoy&rsquo;s (1886) qualitative narrative, where Pahom succumbs after 12&nbsp;hours to narrative exhaustion, securing only a 6-foot grave (≈ 1.11&nbsp;m²), the scientific formulation proves that death occurs precisely at <em>T</em><sub>fatal</sub> = 10&nbsp;hours when fluid loss hits the fatal 7.0&nbsp;L threshold long before caloric depletion, and that optimizing geometry via a continuous circular loop allows a human to enclose up to 58.01&nbsp;km² prior to terminal collapse.</p>
+
+      <p>After achieving this breakthrough discovery, the author embarked on a worldwide presentation tour. His Google Scholar citations skyrocketed, placing him among the most cited researchers alive. Yet this relentless academic pursuit exacted the ultimate toll: after suffering severe neurological overload while trying to cross-reference and cite all 4,000 of his own previous papers in a single footnote to boost his h-index further, he succumbed to severe physiological failure. The funeral was utterly deserted; only the officiating priest was present. Gazing at the single plot, the priest declared: &ldquo;Let Brother Pahom the Isoperimetric rest in peace, a man who dedicated his life to measuring the dirt of God&rsquo;s green earth, only to prove that we all end up with an area of <em>A</em> = 0.&rdquo; In the end, the man needed only one final citation to be buried.</p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="mailto:paborrego@alumnos.unex.es" aria-label="Email">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      </a>
+      <a href="https://github.com/PabloAlmendralejo" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/pablo-borrego-ramos-059102246/" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+      </a>
+    </div>
+    <p>© 2026 Pablo Borrego Ramos</p>
+  </footer>
+</body>
+</html>
