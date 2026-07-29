@@ -156,15 +156,15 @@ a.subtle:focus {
 
 /* Banner de cabecera (Componente 3b) --------------------------------------- */
 .hero-banner {
-  width: 100vw;
-  margin-left: calc(50% - 50vw); /* full-bleed a pesar del padding del body */
-  aspect-ratio: 2 / 1; /* coincide con hero.jpg 1200x600 */
-  max-height: 340px; /* límite para que no domine en escritorio */
+  max-width: var(--max-width);
+  margin: 0 auto; /* centrado, alineado con la columna de lectura */
+  aspect-ratio: 2 / 1; /* coincide con hero.jpg 1200x600; altura completa ~368px */
   height: auto;
   background-image: url("hero.jpg"); /* ruta relativa a style.css */
   background-position: center;
-  background-size: contain; /* nunca recorta; letterbox si se alcanza el límite */
+  background-size: cover; /* caja exacta 2:1 como la imagen: sin recorte ni letterbox */
   background-repeat: no-repeat;
+  border-radius: 8px; /* integración sutil con la página */
 }
 
 /* Contenido de inicio ------------------------------------------------------ */
