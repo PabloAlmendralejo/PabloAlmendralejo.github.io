@@ -10,7 +10,7 @@
   --color-muted: #6b7280;
   --color-bg: #ffffff;
   --color-border: #e5e7eb;
-  --max-width: 56rem;          /* ancho de columna de lectura */
+  --max-width: 60rem;          /* ancho de columna de lectura */
   --font-body: Georgia, 'Times New Roman', serif;
   --font-ui: system-ui, sans-serif;
 }
@@ -156,13 +156,13 @@ a.subtle:focus {
 
 /* Banner de cabecera (Componente 3b) --------------------------------------- */
 .hero-banner {
-  max-width: var(--max-width);  /* ancho completo de la columna de lectura */
-  margin: 1.5rem auto 0;
-  aspect-ratio: 3 / 1;          /* claramente apaisado, altura contenida (~299px a 56rem) */
+  max-width: var(--max-width);
+  margin: 2rem auto 0;
+  aspect-ratio: 4 / 1;          /* apaisado: mucho más ancho que alto (~240px de alto a 60rem) */
   height: auto;
   background-image: url("hero.jpg");
   background-position: center;
-  background-size: cover;
+  background-size: cover;       /* recorta arriba/abajo para llenar la franja */
   background-repeat: no-repeat;
   border-radius: 8px;
 }
