@@ -170,7 +170,7 @@ a.subtle:focus {
   z-index: -1;
   background-image: url("favicon.png");  /* ruta relativa a style.css */
   background-position: center;
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
   opacity: 0.12;
   border-radius: 8px;
