@@ -156,13 +156,13 @@ a.subtle:focus {
 
 /* Banner de cabecera (Componente 3b) --------------------------------------- */
 .hero-banner {
-  max-width: 40rem;
+  max-width: var(--max-width);  /* extendida: todo el ancho de la columna */
   margin: 2rem auto 0;
-  aspect-ratio: 1280 / 889;     /* misma proporción que hero.jpg: imagen completa, sin recorte */
+  aspect-ratio: 3 / 1;          /* franja achatada */
   height: auto;
   background-image: url("hero.jpg");
   background-position: center;
-  background-size: cover;       /* a proporción exacta no recorta nada */
+  background-size: cover;
   background-repeat: no-repeat;
   border-radius: 8px;
 }
