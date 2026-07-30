@@ -78,15 +78,26 @@ img {
 }
 
 /* Cabecera y navegación --------------------------------------------------- */
+/* Mismo layout en todas las páginas que en el hero de Home:
+   menú centrado y botón de tema fijado a la derecha. */
 .site-header {
   padding: 1.25rem 0;
   border-bottom: 1px solid var(--color-border);
 }
 
 .site-header {
+  max-width: none;            /* todo el ancho, como en Home */
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;    /* menú centrado */
+}
+
+.site-header .theme-toggle {
+  position: absolute;         /* botón de tema a la derecha, como en Home */
+  right: 0;                   /* + padding del body = misma distancia al borde que en Home */
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .site-header nav {
@@ -196,9 +207,7 @@ a.subtle:focus {
 }
 
 .hero .theme-toggle {
-  position: absolute;        /* botón de tema en la esquina superior derecha */
-  top: 1.25rem;
-  right: 1.25rem;
+  right: 1.25rem;            /* el hero es full-bleed: compensa el padding */
 }
 
 .hero .site-header nav a {
