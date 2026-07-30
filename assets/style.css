@@ -188,8 +188,17 @@ a.subtle:focus {
 
 .hero .site-header {
   width: 100%;
+  max-width: none;
   padding: 1.25rem;
   border-bottom: none;
+  position: relative;
+  justify-content: center;   /* menú centrado en la foto */
+}
+
+.hero .theme-toggle {
+  position: absolute;        /* botón de tema en la esquina superior derecha */
+  top: 1.25rem;
+  right: 1.25rem;
 }
 
 .hero .site-header nav a {
