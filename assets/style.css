@@ -160,17 +160,16 @@ a.subtle:focus {
 .hero {
   position: relative;
   isolation: isolate;
-  /* misma proporción que hero.jpg (1237x847): la foto se ve entera, sin recorte */
-  max-width: var(--max-width);
-  margin: 0 auto;
-  aspect-ratio: 1237 / 847;
+  /* full-bleed: compensa el padding lateral del body (1.25rem por lado) */
+  width: calc(100% + 2.5rem);
+  margin-left: -1.25rem;
+  height: 20rem;               /* franja achatada, todo el ancho de la página */
   display: flex;
   flex-direction: column;
   background-image: url("hero.jpg");
-  background-position: center;
+  background-position: center 40%;
   background-size: cover;
   background-repeat: no-repeat;
-  border-radius: 0 0 8px 8px;
 }
 
 /* Degradado sutil para que la navegación y el nombre sean legibles */
@@ -357,7 +356,7 @@ a.subtle:focus {
   .hero {
     width: calc(100% + 2rem);
     margin-left: -1rem;
-    border-radius: 0;
+    height: 16rem;
   }
 
   .hero .site-header {
