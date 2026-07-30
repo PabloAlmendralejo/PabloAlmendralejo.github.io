@@ -166,38 +166,24 @@ a.subtle:focus {
   height: 20rem;               /* franja achatada, todo el ancho de la página */
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-}
-
-/* Capa de fondo: la misma foto difuminada rellena los laterales */
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: -20px;                /* evita bordes claros del blur */
-  z-index: -2;
-  background-image: url("hero.jpg");
+  background-image: url("hero.jpg");   /* imagen ya ensanchada a 2.5:1 */
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  filter: blur(18px) brightness(0.85);
 }
 
-/* Capa principal: la foto ENTERA (contain) + degradado para legibilidad */
+/* Degradado sutil para que la navegación y el nombre sean legibles */
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.45),
-      rgba(0, 0, 0, 0.2) 40%,
-      rgba(0, 0, 0, 0.2)
-    ),
-    url("hero.jpg");
-  background-position: center;
-  background-size: auto, contain;
-  background-repeat: no-repeat;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.45),
+    rgba(0, 0, 0, 0.2) 40%,
+    rgba(0, 0, 0, 0.2)
+  );
 }
 
 .hero .site-header {
