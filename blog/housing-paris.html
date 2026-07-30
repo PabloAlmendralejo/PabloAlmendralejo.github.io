@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hunting for Housing in Paris: Platforms and Tools · Pablo Borrego Ramos</title>
+  <meta name="description" content="Tools and resources for the student apartment search around Paris and Saclay: subsidized residences, associations, monitors and bots.">
+  <link rel="icon" type="image/webp" href="../assets/thistle.webp">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme');
+      if (t !== 'light')
+        document.documentElement.dataset.theme = 'dark';
+    })();
+    function toggleTheme() {
+      var r = document.documentElement;
+      if (r.dataset.theme === 'dark') { delete r.dataset.theme; localStorage.setItem('theme', 'light'); }
+      else { r.dataset.theme = 'dark'; localStorage.setItem('theme', 'dark'); }
+    }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <nav aria-label="Main">
+      <a href="../index.html">Home</a>
+      <a href="../research.html">Research</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../blog.html">Blog</a>
+      <a href="../cv.pdf" target="_blank" rel="noopener">CV</a>
+    </nav>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.1 22c-5.5 0-10-4.5-10-10 0-5 3.7-9.2 8.6-9.9.5-.1.9.4.7.9-.3.8-.5 1.7-.5 2.6 0 4.1 3.3 7.4 7.4 7.4.9 0 1.8-.2 2.6-.5.5-.2 1 .3.9.7-.8 5-4.9 8.8-9.7 8.8z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-15 1.5 3h-3L12 2zm0 20-1.5-3h3L12 22zM2 12l3-1.5v3L2 12zm20 0-3 1.5v-3L22 12zM4.2 5.6l3.2 1.1-2.1 2.1-1.1-3.2zm15.6 12.8-3.2-1.1 2.1-2.1 1.1 3.2zM5.6 19.8l1.1-3.2 2.1 2.1-3.2 1.1zM18.4 4.2l-1.1 3.2-2.1-2.1 3.2-1.1z"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <h1>Hunting for Housing in Paris: Platforms and Tools</h1>
+    <p class="pub-venue">July 2026</p>
+
+    <p>Here I'll share some of the tools I built to help with my apartment search, along with other resources I used as a student.</p>
+
+    <h2>Public / subsidized residences</h2>
+    <p>These tend to have the lowest prices.</p>
+
+    <p><strong><a href="https://www.ciup.fr/" target="_blank" rel="noopener">Cité Internationale Universitaire de Paris (CIUP)</a></strong> — a cluster of about 40 &ldquo;maisons,&rdquo; many of them tied to a specific country or institution, which gives you priority if you match. Even if you don't, each house is required to keep at least 30% of its spots for residents of other nationalities, so you still have a real shot. You need to apply early (around April) to secure a spot. Prices range from €500–800; it's roughly 40 minutes from Saclay and 20 minutes from central Paris.</p>
+
+    <p><strong><a href="https://www.etudiant.gouv.fr/fr/comment-se-passe-l-attribution-des-logements-en-residence-73" target="_blank" rel="noopener">CROUS</a></strong> — Your university usually has some reserved slots, but priority is based mainly on your (or your parents') French tax household and financial situation, not just where you currently live. If you don't qualify there, you're left with whatever remains in the complementary phase, which works more or less first-come-first-served. To stay on top of this and get notified the moment a slot opens, I built this monitor: <a href="https://github.com/PabloAlmendralejo/housing-monitor/tree/main/crous_monitor" target="_blank" rel="noopener">housing-monitor/crous_monitor</a>. Prices range from €300–500; locations vary.</p>
+
+    <p><strong><a href="https://saclay.residences-cesal.fr/" target="_blank" rel="noopener">Césal</a></strong> — private residences subsidized by the government, similar to CROUS, with some slots reserved for specific universities and the same first-come-first-served policy. I built a monitor not only to check availability but also to book automatically the moment a spot opens — since most openings happen around 6pm, I added a &ldquo;sniper&rdquo; mode that checks and books every 10 seconds around that time. See <a href="https://github.com/PabloAlmendralejo/housing-monitor/tree/main/cesal_monitor" target="_blank" rel="noopener">housing-monitor/cesal_monitor</a>. Prices range from €400–600; located on the Saclay plateau.</p>
+
+    <p><strong><a href="https://logement.smerra.fr/fr/fac-habitat/" target="_blank" rel="noopener">Fac-Habitat</a></strong> — private residences but quite affordable, around €500–600. Locations vary, but a couple are close to the Saclay plateau. I applied in early June and was put on a waiting list.</p>
+
+    <p><strong><a href="https://www.cljt.com/" target="_blank" rel="noopener">CLJT</a> &amp; <a href="https://www.aljt.com/" target="_blank" rel="noopener">ALJT</a></strong> — associations that also manage residences, with prices around €400–500. I submitted a request in June that's still being processed (as of late July).</p>
+
+    <p><strong><a href="https://www.arpej.fr/" target="_blank" rel="noopener">ARPEJ</a></strong> — semi-private residences; you need an access code from your university to apply to most of them. There are several near the Saclay area, at around €400.</p>
+
+    <h2>Associations that help with the search</h2>
+
+    <p><strong><a href="https://www.science-accueil.org/" target="_blank" rel="noopener">Science Accueil</a></strong> — you need to be a PhD student, researcher, or Master's student at certain partner universities to use this service. It's free, and they help you by proposing individual listings from their own database, each request gets you around 20 listings that you contact directly. Because the service is exclusive to their network, response rates from landlords tend to be quite good.</p>
+
+    <p><strong><a href="https://www.heberjeunes.fr/" target="_blank" rel="noopener">Héberjeunes</a></strong> — a non-profit association (loi 1901) focused on housing near Paris-Saclay. Membership costs €8 a year, and they offer solid listings with a good contact rate, since you reach out to landlords directly. I built a bot that scrapes their site every hour and notifies me when new listings appear: <a href="https://github.com/PabloAlmendralejo/housing-monitor/tree/main/heberjeunes_monitor" target="_blank" rel="noopener">housing-monitor/heberjeunes_monitor</a>.</p>
+
+    <h2>Free market websites</h2>
+
+    <p><strong><a href="https://www.pap.fr/" target="_blank" rel="noopener">Pap.fr</a></strong>, <strong><a href="https://www.leboncoin.fr/" target="_blank" rel="noopener">Leboncoin</a></strong>, <strong><a href="https://casa.universite-paris-saclay.fr/" target="_blank" rel="noopener">CASA</a></strong> (Université Paris-Saclay's own housing platform, aggregating CROUS, private, and partner listings for the area), <strong><a href="https://www.lokaviz.fr/" target="_blank" rel="noopener">Lokaviz</a></strong> (CROUS-run platform listing private landlords who rent to students), and <strong><a href="https://www.ecla-campus.com/" target="_blank" rel="noopener">ECLA Campus</a></strong> (a co-living option in Massy). I didn't get a great response rate on these, and prices seemed a bit higher than through the other resources above.</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="mailto:paborrego@alumnos.unex.es" aria-label="Email">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      </a>
+      <a href="https://github.com/PabloAlmendralejo" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/pablo-borrego-ramos-059102246/" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+      </a>
+    </div>
+    <p>© 2026 Pablo Borrego Ramos</p>
+  </footer>
+</body>
+</html>
