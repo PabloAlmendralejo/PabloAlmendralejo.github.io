@@ -316,6 +316,12 @@ a.subtle:focus {
   font-size: 0.9rem;
 }
 
+.publication .pub-note {
+  margin: 0.25rem 0;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
 /* Proyectos (Modelo 2) ----------------------------------------------------- */
 .project {
   margin: 2rem 0;
