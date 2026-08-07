@@ -10,7 +10,7 @@
   --color-muted: #6b7280;
   --color-bg: #ffffff;
   --color-border: #e5e7eb;
-  --max-width: 60rem;          /* ancho de columna de lectura */
+  --max-width: 46rem;          /* ancho de columna de lectura */
   --font-body: Georgia, 'Times New Roman', serif;
   --font-ui: system-ui, sans-serif;
 }
@@ -78,26 +78,15 @@ img {
 }
 
 /* Cabecera y navegación --------------------------------------------------- */
-/* Mismo layout en todas las páginas que en el hero de Home:
-   menú centrado y botón de tema fijado a la derecha. */
 .site-header {
   padding: 1.25rem 0;
   border-bottom: 1px solid var(--color-border);
 }
 
 .site-header {
-  max-width: none;            /* todo el ancho, como en Home */
-  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;    /* menú centrado */
-}
-
-.site-header .theme-toggle {
-  position: absolute;         /* botón de tema a la derecha, como en Home */
-  right: 0;                   /* + padding del body = misma distancia al borde que en Home */
-  top: 50%;
-  transform: translateY(-50%);
+  justify-content: space-between;
 }
 
 .site-header nav {
@@ -165,113 +154,9 @@ a.subtle:focus {
   color: var(--color-accent);
 }
 
-/* Hero de portada (solo index.html) ---------------------------------------- */
-/* Foto a sangre completa con la navegación superpuesta arriba y el nombre
-   centrado. El resto de páginas usan .site-header sin cambios. */
-.hero {
-  position: relative;
-  isolation: isolate;
-  /* full-bleed: compensa el padding lateral del body (1.25rem por lado) */
-  width: calc(100% + 2.5rem);
-  margin-left: -1.25rem;
-  height: 20rem;               /* franja achatada, todo el ancho de la página */
-  display: flex;
-  flex-direction: column;
-  background-image: url("hero.jpg");   /* imagen ya ensanchada a 2.5:1 */
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-/* Degradado sutil para que la navegación y el nombre sean legibles */
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.45),
-    rgba(0, 0, 0, 0.2) 40%,
-    rgba(0, 0, 0, 0.2)
-  );
-}
-
-.hero .site-header {
-  width: 100%;
-  max-width: none;
-  padding: 1.25rem;
-  border-bottom: none;
-  position: relative;
-  justify-content: center;   /* menú centrado en la foto */
-}
-
-.hero .theme-toggle {
-  right: 1.25rem;            /* el hero es full-bleed: compensa el padding */
-}
-
-.hero .site-header nav a {
-  color: #fff;
-}
-
-.hero .site-header nav a:hover,
-.hero .site-header nav a:focus {
-  color: #fff;
-}
-
-.hero .site-header nav a.active {
-  color: #fff;
-  border-bottom-color: #fff;
-}
-
-.hero .theme-toggle {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.6);
-}
-
-.hero .theme-toggle:hover,
-.hero .theme-toggle:focus {
-  color: #fff;
-  border-color: #fff;
-}
-
-.hero-title {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #fff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  padding: 2rem 1rem 3rem;
-}
-
-.hero-title h1 {
-  margin: 0;
-  font-size: clamp(1.9rem, 6vw, 3rem);
-  color: #fff;
-}
-
-.hero-tagline {
-  margin: 0.5rem 0 0;
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-  font-family: var(--font-ui);
-}
-
-/* Imagen de entrada de blog ------------------------------------------------ */
-.post-image {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  margin: 1.5rem auto 0;
-  border-radius: 8px;
-}
-
 /* Contenido de inicio ------------------------------------------------------ */
 .profile-header {
   text-align: center;
-  padding: 2rem 1rem;
 }
 
 .profile-photo {
@@ -314,12 +199,6 @@ a.subtle:focus {
   margin: 0.25rem 0;
   font-family: var(--font-ui);
   font-size: 0.9rem;
-}
-
-.publication .pub-note {
-  margin: 0.25rem 0;
-  color: var(--color-muted);
-  font-size: 0.95rem;
 }
 
 /* Proyectos (Modelo 2) ----------------------------------------------------- */
@@ -375,16 +254,6 @@ a.subtle:focus {
 
   .site-header nav {
     gap: 1rem;
-  }
-
-  .hero {
-    width: calc(100% + 2rem);
-    margin-left: -1rem;
-    height: 16rem;
-  }
-
-  .hero .site-header {
-    padding: 1rem;
   }
 
   .profile-photo {
