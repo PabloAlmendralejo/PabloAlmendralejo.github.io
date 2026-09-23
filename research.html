@@ -10,7 +10,7 @@
   <script>
     (function () {
       var t = localStorage.getItem('theme');
-      if (t !== 'light')
+      if (t === 'dark')
         document.documentElement.dataset.theme = 'dark';
     })();
     function toggleTheme() {
