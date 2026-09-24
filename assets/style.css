@@ -327,20 +327,17 @@ a.subtle:focus {
   margin: 2rem 0;
 }
 
+.project .proj-thumb {
+  display: block;
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
 .project .proj-title {
   margin-bottom: 0.25rem;
-}
-
-.project .proj-title a,
-.project .proj-title a:visited {
-  color: var(--color-text);
-  text-decoration: none;
-}
-
-.project .proj-title a:hover,
-.project .proj-title a:focus {
-  color: var(--color-accent);
-  text-decoration: none;
 }
 
 .project .proj-desc {
@@ -352,6 +349,12 @@ a.subtle:focus {
   color: var(--color-muted);
   font-family: var(--font-ui);
   font-size: 0.85rem;
+}
+
+.project .proj-links {
+  margin: 0.25rem 0;
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
 }
 
 /* Pie de página ------------------------------------------------------------ */
