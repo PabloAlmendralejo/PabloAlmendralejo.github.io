@@ -284,6 +284,23 @@ a.subtle:focus {
   margin: 2rem 0;
 }
 
+.publication .pub-thumb {
+  display: block;
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.publication .pub-thumb-small {
+  max-width: 220px;
+}
+
+.publication .pub-thumb-portrait {
+  max-width: 200px;
+}
+
 .publication .pub-title {
   margin-bottom: 0.25rem;
 }
