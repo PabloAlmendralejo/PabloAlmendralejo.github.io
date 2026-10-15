@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CV · Pablo Borrego Ramos</title>
+  <meta name="description" content="Curriculum vitae of Pablo Borrego Ramos: education, research, and professional experience.">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark')
+        document.documentElement.dataset.theme = 'dark';
+    })();
+    function toggleTheme() {
+      var r = document.documentElement;
+      if (r.dataset.theme === 'dark') { delete r.dataset.theme; localStorage.setItem('theme', 'light'); }
+      else { r.dataset.theme = 'dark'; localStorage.setItem('theme', 'dark'); }
+    }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <nav aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="research.html">Research</a>
+      <a href="projects.html">Projects</a>
+      <a href="blog.html">Blog</a>
+      <a href="cv.html" class="active">CV</a>
+    </nav>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.1 22c-5.5 0-10-4.5-10-10 0-5 3.7-9.2 8.6-9.9.5-.1.9.4.7.9-.3.8-.5 1.7-.5 2.6 0 4.1 3.3 7.4 7.4 7.4.9 0 1.8-.2 2.6-.5.5-.2 1 .3.9.7-.8 5-4.9 8.8-9.7 8.8z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-15 1.5 3h-3L12 2zm0 20-1.5-3h3L12 22zM2 12l3-1.5v3L2 12zm20 0-3 1.5v-3L22 12zM4.2 5.6l3.2 1.1-2.1 2.1-1.1-3.2zm15.6 12.8-3.2-1.1 2.1-2.1 1.1 3.2zM5.6 19.8l1.1-3.2 2.1 2.1-3.2 1.1zM18.4 4.2l-1.1 3.2-2.1-2.1 3.2-1.1z"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <h1>CV</h1>
+    <p class="cv-actions"><a class="cv-download" href="cv-pablo-borrego-ramos.pdf" download>Download full CV (PDF)</a></p>
+
+
+    <details class="cv-section">
+      <summary><h2>Education</h2><span class="cv-teaser">ENS Paris-Saclay &middot; University of Extremadura</span></summary>
+      <ol class="cv-timeline">
+        <li>
+          <span class="cv-when">Sep 2026 &ndash; now</span>
+          <h3>MVA master&rsquo;s, ENS Paris-Saclay</h3>
+          <p>Optimal transport, stochastic calculus, convex and large-scale distributed optimization for machine learning.</p>
+        </li>
+        <li>
+          <span class="cv-when">2020 &ndash; 2025</span>
+          <h3>Dual BSc in Mathematics and Statistics, University of Extremadura</h3>
+          <p>Award for the best academic record of the double degree (ranked 1st/50 in Statistics, 2nd/50 in Mathematics) and a merit-based 99% tuition waiver.</p>
+        </li>
+      </ol>
+    </details>
+
+    <details class="cv-section">
+      <summary><h2>Research</h2><span class="cv-teaser">1 preprint &middot; 2 BSc theses</span></summary>
+      <p class="cv-interests">Interests: optimal transport and its applications; stochastic processes and dynamical systems; mathematical and combinatorial optimization.</p>
+      <ol class="cv-timeline">
+        <li>
+          <span class="cv-when">2026 &middot; Preprint, under review</span>
+          <h3><a href="research/orienteering.html">Exact branch-and-cut for terrain-aware orienteering</a></h3>
+          <p>Sole author. A new orienteering variant with direction-dependent costs and cumulative fatigue, solved exactly on real terrain.</p>
+        </li>
+        <li>
+          <span class="cv-when">2025 &middot; BSc thesis</span>
+          <h3><a href="research/thesis-math.html">Discrete Dynamical Systems in Low Dimensions</a></h3>
+          <p>Stability of non-hyperbolic fixed points, period-doubling bifurcations, and a proof of chaos for the logistic family.</p>
+        </li>
+        <li>
+          <span class="cv-when">2025 &middot; BSc thesis</span>
+          <h3><a href="research/thesis-stats.html">Functional Data Analysis</a></h3>
+          <p>Theory and applications to financial time series, including 655 ECB yield curves.</p>
+        </li>
+      </ol>
+    </details>
+
+    <details class="cv-section">
+      <summary><h2>Work experience</h2><span class="cv-teaser">Amazon &middot; Metanogenia</span></summary>
+      <ol class="cv-timeline">
+        <li>
+          <span class="cv-when">Feb 2025 &ndash; Aug 2026 &middot; Luxembourg</span>
+          <h3>Business Intelligence Engineer, Amazon</h3>
+          <p>Statistical and ML models for throughput prediction and capacity planning, plus an end-to-end absenteeism forecasting system with automated retraining.</p>
+        </li>
+        <li>
+          <span class="cv-when">Jun &ndash; Jul 2023 &middot; Spain</span>
+          <h3>Data Science Intern, Metanogenia</h3>
+          <p>Methane-yield prediction from heterogeneous reactor data.</p>
+        </li>
+      </ol>
+    </details>
+
+    <ul class="cv-chips">
+      <li>Python</li><li>PyTorch</li><li>R</li><li>C++</li><li>LaTeX</li>
+      <li>Spanish (native)</li><li>English (C1)</li><li>French (A2)</li>
+    </ul>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="mailto:paborrego@alumnos.unex.es" aria-label="Email">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      </a>
+      <a href="https://github.com/PabloAlmendralejo" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+      </a>
+    </div>
+    <p>© 2026 Pablo Borrego Ramos</p>
+  </footer>
+</body>
+</html>
